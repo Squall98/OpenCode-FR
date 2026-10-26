@@ -1,0 +1,143 @@
+// ⚠️ MISE À JOUR 15/10/2026 (après les premiers essais) : REA est maintenant activé EN ENTIER (207 outils) dans tous les profils,
+// via le Code Mode d'OpenCode (pas de "codemode": false, plus de règle "rea_*": deny, plus de liste dans reverse-web).
+// + policies : provider.use refusé pour tout (*) sauf ia-locale → pas de modèles en ligne (opencode/…).
+// Raison : la touche Tab ne change pas de profil dans OpenCode 2.0.29. La config qui fait foi est opencode\opencode.json.
+// Configuration d'OpenCode v2 — agent de code local de Nykaro (D:\IA LOCAL), créée le 15/10/2026.
+// Ce fichier est la config « globale » d'OpenCode : le lanceur pointe XDG_CONFIG_HOME sur D:\IA LOCAL\config.
+// Doc : https://opencode.ai/v2/docs/  ·  Schéma : https://opencode.ai/config.json
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // ---------- Modèle : le moteur IA locale (llama-swap, D:\IA-et-outils\IA-locale) ----------
+  "model": "ia-locale/agent",
+  "providers": {
+    "ia-locale": {
+      "name": "IA locale (RTX 5090)",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "http://127.0.0.1:8090/v1",
+        // Le 1er appel charge le modèle (~10 s) ; une longue réflexion peut durer plusieurs minutes.
+        "headerTimeout": 900000,
+        "chunkTimeout": 900000
+      },
+      "models": {
+        "agent": {
+          "name": "Qwen3.8-27B (agent, réflexion)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 98304, "output": 16384 },
+          "compatibility": { "reasoningField": "reasoning_content" }
+        },
+        "code": {
+          "name": "Qwen3.6-35B-A3B (rapide, sans réflexion)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 32768, "output": 8192 }
+        }
+      }
+    }
+  },
+  // Pas de recherche automatique d'Ollama / LM Studio : on n'utilise que l'IA locale.
+  "plugins": ["-opencode.provider.ollama", "-opencode.provider.lmstudio"],
+  "update": "notify",
+  "default_agent": "build",
+
+  // Garde 20 k tokens récents quand la conversation est résumée (contexte de 96 k).
+  "compaction": { "auto": true, "keep": { "tokens": 20000 }, "buffer": 16000 },
+
+  // ---------- MCP ----------
+  // HOME/USERPROFILE sont remis à la vraie valeur pour les MCP (le lanceur les isole pour OpenCode).
+  "mcp": {
+    "servers": {
+      "rea": {
+        "type": "local",
+        "command": ["C:\\Program Files\\nodejs\\node.exe", "C:\\MCP\\rea-mcp\\node_modules\\rea-agents\\scripts\\rea.mjs", "mcp"],
+        "codemode": false,
+        "environment": {
+          "GHIDRA_INSTALL_DIR": "C:\\MCP\\rea-mcp\\outils\\ghidra_12.1.4_PUBLIC",
+          "JAVA_HOME": "C:\\MCP\\rea-mcp\\outils\\jdk-21.0.12.1+1",
+          "USERPROFILE": "{env:VRAI_USERPROFILE}",
+          "HOME": "{env:VRAI_USERPROFILE}"
+        },
+        "timeout": { "startup": 60000 }
+      },
+      "playwright": {
+        "type": "local",
+        "command": ["cmd", "/c", "npx", "-y", "@playwright/mcp@latest"],
+        "codemode": false,
+        "environment": { "USERPROFILE": "{env:VRAI_USERPROFILE}", "HOME": "{env:VRAI_USERPROFILE}" },
+        "timeout": { "startup": 60000 }
+      },
+      "perplexity": {
+        "type": "local",
+        "command": ["C:\\MCP\\perplexity-mcp\\.venv\\Scripts\\python.exe", "C:\\MCP\\perplexity-mcp\\server.py"],
+        "codemode": false,
+        "environment": { "USERPROFILE": "{env:VRAI_USERPROFILE}", "HOME": "{env:VRAI_USERPROFILE}" }
+      }
+    }
+  },
+
+  // ---------- Permissions (la DERNIÈRE règle qui correspond gagne) ----------
+  "permissions": [
+    // Rien en dehors de D:\IA LOCAL (lecture et écriture).
+    { "action": "external_directory", "resource": "*", "effect": "deny" },
+    // Ses propres réglages et son programme : lecture seule.
+    { "action": "edit", "resource": "config/*", "effect": "deny" },
+    { "action": "edit", "resource": "D:/IA LOCAL/config/*", "effect": "deny" },
+    { "action": "edit", "resource": "opencode/*", "effect": "deny" },
+    { "action": "edit", "resource": "D:/IA LOCAL/opencode/*", "effect": "deny" },
+    { "action": "edit", "resource": ".donnees/*", "effect": "deny" },
+    { "action": "edit", "resource": "D:/IA LOCAL/.donnees/*", "effect": "deny" },
+
+    // Terminal : il demande avant chaque commande…
+    { "action": "shell", "resource": "*", "effect": "ask" },
+    // … sauf les commandes qui ne font que regarder.
+    { "action": "shell", "resource": "ls *", "effect": "allow" },
+    { "action": "shell", "resource": "dir *", "effect": "allow" },
+    { "action": "shell", "resource": "pwd", "effect": "allow" },
+    { "action": "shell", "resource": "git status *", "effect": "allow" },
+    { "action": "shell", "resource": "git diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git log *", "effect": "allow" },
+    // Jamais : pousser sur GitHub, Docker (Nykaro le lance lui-même), formater/supprimer en masse.
+    { "action": "shell", "resource": "git push *", "effect": "deny" },
+    { "action": "shell", "resource": "docker *", "effect": "deny" },
+    { "action": "shell", "resource": "format *", "effect": "deny" },
+
+    // Internet direct : il demande.
+    { "action": "webfetch", "resource": "*", "effect": "ask" },
+    { "action": "websearch", "resource": "*", "effect": "ask" },
+
+    // REA : ~200 outils, trop pour un modèle local. Masqués par défaut ; le profil « reverse-web » ouvre les siens.
+    { "action": "rea_*", "resource": "*", "effect": "deny" },
+
+    // Skills : seulement les siennes (pas celles de Claude).
+    { "action": "skill", "resource": "*", "effect": "deny" },
+    { "action": "skill", "resource": "reverse-web", "effect": "allow" },
+    { "action": "skill", "resource": "installer-outil", "effect": "allow" }
+  ],
+
+  // ---------- Profils (Tab pour changer dans OpenCode) ----------
+  "agents": {
+    "build": {
+      "description": "Dev : créer, modifier et lancer du code dans D:\\IA LOCAL\\projets"
+    },
+    "reverse-web": {
+      "description": "Reverse engineering de sites web avec REA et Playwright",
+      "mode": "primary",
+      "system": "Tu fais du reverse engineering de sites web. Avant d'agir, charge la skill reverse-web : elle dit quel outil REA ou Playwright utiliser pour chaque tâche. Range tout ce que tu produis dans projets\\<nom-du-site>\\.",
+      // 12 outils REA utiles sur Windows pour le web (les autres demandent Linux, WABT ou des JSON énormes en entrée).
+      "permissions": [
+        { "action": "rea_list_browser_targets", "resource": "*", "effect": "allow" },
+        { "action": "rea_inspect_web_page", "resource": "*", "effect": "allow" },
+        { "action": "rea_capture_web_screenshot", "resource": "*", "effect": "allow" },
+        { "action": "rea_analyze_web_bundle", "resource": "*", "effect": "allow" },
+        { "action": "rea_observe_web_session", "resource": "*", "effect": "allow" },
+        { "action": "rea_observe_web_execution", "resource": "*", "effect": "allow" },
+        { "action": "rea_inspect_web_event_listeners", "resource": "*", "effect": "allow" },
+        { "action": "rea_capture_browser_scenario", "resource": "*", "effect": "allow" },
+        { "action": "rea_inspect_web_network_capture", "resource": "*", "effect": "allow" },
+        { "action": "rea_discover_webmcp_tools", "resource": "*", "effect": "allow" },
+        { "action": "rea_export_web_scripts", "resource": "*", "effect": "allow" },
+        { "action": "rea_analyze_javascript_application", "resource": "*", "effect": "allow" }
+      ]
+    }
+  }
+}

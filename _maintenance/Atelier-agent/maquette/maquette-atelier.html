@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette Atelier</title>
+<style>
+:root{
+  --fond:#0a0a0a;--colonne:#050505;--surface:#141414;--surface2:#1b1b1b;--bord:#262626;--bord2:#333;
+  --texte:#ececec;--doux:#9a9a9a;--faible:#6b6b6b;--acc:#4f8cff;--acc-f:#14223d;
+  --ok:#3fb950;--ok-f:#10261a;--att:#d29922;--att-f:#2b2110;--non:#f85149;--non-f:#2d1214;--violet:#a371f7;
+  --rayon:8px;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --fond:#f6f6f6;--colonne:#ececec;--surface:#ffffff;--surface2:#f2f2f2;--bord:#e1e1e1;--bord2:#d0d0d0;
+    --texte:#161616;--doux:#5c5c5c;--faible:#8a8a8a;--acc:#2563eb;--acc-f:#e6eefe;
+    --ok:#1a7f37;--ok-f:#e6f4ea;--att:#9a6700;--att-f:#fff4d6;--non:#cf222e;--non-f:#ffebe9;--violet:#8250df;
+  }
+}
+:root[data-theme="light"]{
+  --fond:#f6f6f6;--colonne:#ececec;--surface:#ffffff;--surface2:#f2f2f2;--bord:#e1e1e1;--bord2:#d0d0d0;
+  --texte:#161616;--doux:#5c5c5c;--faible:#8a8a8a;--acc:#2563eb;--acc-f:#e6eefe;
+  --ok:#1a7f37;--ok-f:#e6f4ea;--att:#9a6700;--att-f:#fff4d6;--non:#cf222e;--non-f:#ffebe9;--violet:#8250df;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--fond);color:var(--texte);font:13.5px/1.5 Inter,"Segoe UI",system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+code,.mono{font-family:"IBM Plex Mono",Consolas,monospace;font-size:12.5px}
+code{background:var(--surface2);border:1px solid var(--bord);border-radius:4px;padding:0 5px}
+a{color:var(--acc)}
+
+/* Bandeau maquette + bascule de vue */
+.bandeau{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:var(--att-f);border-bottom:1px solid var(--bord);color:var(--att);font-weight:600}
+.bandeau span{font-weight:400;color:var(--doux)}
+.bandeau .vues{margin-left:auto;display:flex;gap:4px}
+.vues button{background:var(--surface);border:1px solid var(--bord2);border-radius:6px;padding:4px 10px;cursor:pointer;color:var(--texte)}
+.vues button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+
+/* Fenêtre Atelier */
+.fenetre{display:none;height:calc(100% - 41px)}
+.fenetre.active{display:flex}
+.colonne{width:228px;flex-shrink:0;background:var(--colonne);border-right:1px solid var(--bord);display:flex;flex-direction:column;padding:10px 8px;gap:2px;overflow:auto}
+.logo{display:flex;align-items:center;gap:8px;padding:6px 8px 12px;font-weight:700;letter-spacing:.2px}
+.logo i{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--acc),var(--violet));display:inline-block}
+.groupe{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--faible);padding:12px 8px 4px}
+.nav{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;border:0;border-radius:6px;padding:6px 8px;cursor:pointer;color:var(--doux)}
+.nav:hover{background:var(--surface)}
+.nav[aria-current="page"]{background:var(--surface2);color:var(--texte)}
+.nav .ic{width:16px;text-align:center;opacity:.85}
+.nav .nb{margin-left:auto;font-size:11px;color:var(--faible)}
+.etat-bas{margin-top:auto;border-top:1px solid var(--bord);padding:10px 8px 4px;display:grid;gap:6px;font-size:12px;color:var(--doux)}
+.pastille{display:inline-flex;align-items:center;gap:6px}
+.pastille::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--faible)}
+.pastille.ok::before{background:var(--ok)}
+.pastille.att::before{background:var(--att)}
+
+.principal{flex:1;overflow:auto;padding:22px 28px 60px}
+.ecran{display:none;max-width:1100px}
+.ecran.actif{display:block}
+h1{font-size:20px;margin:0 0 4px}
+.sous{color:var(--doux);margin:0 0 18px}
+h2{font-size:14px;margin:22px 0 10px}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:var(--rayon);padding:14px 16px}
+.grille{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.chiffre{font-size:22px;font-weight:700}
+.etiq{font-size:12px;color:var(--doux)}
+.ligne{display:flex;align-items:center;gap:10px}
+.espace{flex:1}
+.btn{background:var(--surface2);border:1px solid var(--bord2);border-radius:6px;padding:5px 12px;cursor:pointer}
+.btn:hover{border-color:var(--faible)}
+.btn.prim{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.dang{color:var(--non)}
+.badge{display:inline-block;font-size:11px;border-radius:20px;padding:1px 8px;border:1px solid var(--bord2);color:var(--doux);white-space:nowrap}
+.badge.ok{color:var(--ok);border-color:transparent;background:var(--ok-f)}
+.badge.att{color:var(--att);border-color:transparent;background:var(--att-f)}
+.badge.non{color:var(--non);border-color:transparent;background:var(--non-f)}
+.badge.acc{color:var(--acc);border-color:transparent;background:var(--acc-f)}
+.note{background:var(--acc-f);border:1px solid transparent;border-radius:var(--rayon);padding:10px 14px;margin:12px 0;color:var(--texte)}
+.note.att{background:var(--att-f)}
+.statut{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ok);margin-top:12px}
+
+/* Agents : liste + formulaire */
+.deux{display:grid;grid-template-columns:270px 1fr;gap:16px;align-items:start}
+.liste{background:var(--surface);border:1px solid var(--bord);border-radius:var(--rayon);padding:6px}
+.liste h3{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--faible);margin:10px 8px 4px}
+.item{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:7px 8px;cursor:pointer}
+.item:hover{background:var(--surface2)}
+.item[aria-current="true"]{background:var(--acc-f)}
+.puce{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.item small{display:block;color:var(--faible);font-size:11.5px;line-height:1.3}
+.champ{display:grid;gap:4px;margin-bottom:12px}
+.champ label{font-size:12px;color:var(--doux)}
+.champ input,.champ select,.champ textarea{background:var(--surface2);border:1px solid var(--bord2);border-radius:6px;padding:7px 9px;width:100%}
+.champ textarea{min-height:92px;resize:vertical}
+.champs2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.segm{display:inline-flex;border:1px solid var(--bord2);border-radius:6px;overflow:hidden}
+.segm button{border:0;background:var(--surface2);padding:4px 10px;cursor:pointer;color:var(--doux)}
+.segm button+button{border-left:1px solid var(--bord2)}
+.segm button[aria-pressed="true"].v-oui{background:var(--ok-f);color:var(--ok)}
+.segm button[aria-pressed="true"].v-dem{background:var(--att-f);color:var(--att)}
+.segm button[aria-pressed="true"].v-non{background:var(--non-f);color:var(--non)}
+.droits{display:grid;gap:2px}
+.droit{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--bord)}
+.droit:first-child{border-top:0}
+.droit div{flex:1}
+.droit small{display:block;color:var(--faible)}
+details{margin-top:10px}
+summary{cursor:pointer;color:var(--doux)}
+pre{background:var(--surface2);border:1px solid var(--bord);border-radius:6px;padding:10px;overflow:auto;font-size:12px;margin:8px 0 0}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px 10px;border-top:1px solid var(--bord);vertical-align:top}
+th{font-size:12px;color:var(--faible);font-weight:600;border-top:0}
+.inter{width:34px;height:19px;border-radius:20px;background:var(--bord2);position:relative;border:0;cursor:pointer;flex-shrink:0}
+.inter::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.15s}
+.inter[aria-pressed="true"]{background:var(--ok)}
+.inter[aria-pressed="true"]::after{left:17px}
+.cadenas{color:var(--faible)}
+
+/* Assistant d'équipe */
+.etapes{display:flex;gap:8px;margin-bottom:14px}
+.etapes span{flex:1;padding:8px 10px;border-radius:6px;background:var(--surface);border:1px solid var(--bord);color:var(--doux);font-size:12.5px}
+.etapes span.fait{border-color:var(--acc);color:var(--texte)}
+.choix{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.choix label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--bord);border-radius:var(--rayon);padding:10px 12px;cursor:pointer}
+.choix input{margin-top:3px}
+.choix label:has(input:checked){border-color:var(--acc);background:var(--acc-f)}
+
+/* Bibliothèque */
+.filtres{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filtres button{border:1px solid var(--bord2);background:var(--surface);border-radius:20px;padding:3px 11px;cursor:pointer;color:var(--doux)}
+.filtres button[aria-pressed="true"]{background:var(--acc-f);border-color:var(--acc);color:var(--texte)}
+.modele h4{margin:0;font-size:14px}
+.modele p{margin:6px 0 10px;color:var(--doux)}
+.modele .ligne{flex-wrap:wrap;gap:5px}
+.recherche{width:100%;background:var(--surface);border:1px solid var(--bord2);border-radius:6px;padding:8px 10px;margin-bottom:10px}
+
+/* Vue « dans OpenCode » */
+.oc{display:none;height:calc(100% - 41px)}
+.oc.active{display:flex}
+.oc .col{width:230px;background:var(--colonne);border-right:1px solid var(--bord);padding:10px 8px;display:flex;flex-direction:column;gap:2px}
+.oc .lig{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;color:var(--doux)}
+.oc .lig.act{background:var(--surface2);color:var(--texte)}
+.oc .lig.nouveau{outline:1.5px dashed var(--acc);outline-offset:-1.5px;color:var(--texte)}
+.oc .bas{margin-top:auto;display:grid;gap:2px;border-top:1px solid var(--bord);padding-top:8px}
+.oc .zone{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
+.compo{width:min(640px,90%);background:var(--surface);border:1px solid var(--bord);border-radius:12px;padding:14px;position:relative}
+.compo .place{color:var(--faible);margin-bottom:22px}
+.compo .ctrl{display:flex;align-items:center;gap:8px;color:var(--doux);position:relative}
+.menu-ag{position:absolute;bottom:46px;left:30px;width:380px;background:var(--surface2);border:1px solid var(--bord2);border-radius:10px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.menu-ag .opt{padding:7px 9px;border-radius:6px}
+.menu-ag .opt.sel{background:var(--acc-f)}
+.menu-ag .opt b{display:block;color:var(--texte);font-weight:600}
+.menu-ag .opt small{color:var(--doux)}
+.qmark{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px dashed var(--acc);color:var(--acc);font-weight:700;font-size:12px}
+.legende{position:absolute;right:24px;top:24px;width:300px}
+.legende li{margin-bottom:6px}
+.nouv{color:var(--acc);font-weight:600}
+
+@media (max-width:860px){
+  .colonne{width:64px}.colonne .txt,.groupe,.etat-bas,.logo b{display:none}
+  .deux{grid-template-columns:1fr}.champs2{grid-template-columns:1fr}
+  .oc .col{display:none}.legende{position:static;width:auto;margin:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="bandeau">
+  MAQUETTE <span>— rien ne fonctionne encore, ni ne modifie ta config : c'est pour voir à quoi ressemblerait l'Atelier.</span>
+  <div class="vues" role="group" aria-label="Vue">
+    <button type="button" data-vue="atelier" aria-pressed="true">La fenêtre Atelier</button>
+    <button type="button" data-vue="oc" aria-pressed="false">Ce qui change dans OpenCode</button>
+    <button type="button" id="theme">Clair / sombre</button>
+  </div>
+</div>
+
+<!-- =================== FENÊTRE ATELIER =================== -->
+<div class="fenetre active" id="vue-atelier">
+  <nav class="colonne" aria-label="Sections de l'Atelier">
+    <div class="logo"><i></i><b>Atelier de l'agent</b></div>
+    <button class="nav" data-ecran="accueil" aria-current="page"><span class="ic">⌂</span><span class="txt">Vue d'ensemble</span></button>
+    <div class="groupe">Agents</div>
+    <button class="nav" data-ecran="agents"><span class="ic">◉</span><span class="txt">Mes agents</span><span class="nb txt">8</span></button>
+    <button class="nav" data-ecran="equipes"><span class="ic">⧉</span><span class="txt">Équipes</span><span class="nb txt">1</span></button>
+    <button class="nav" data-ecran="biblio"><span class="ic">▦</span><span class="txt">Bibliothèque de modèles</span><span class="nb txt" id="nb-biblio"></span></button>
+    <button class="nav" data-ecran="outils"><span class="ic">⚒</span><span class="txt">Outils de base</span><span class="nb txt">13</span></button>
+    <div class="groupe">Branchements</div>
+    <button class="nav" data-ecran="mcp"><span class="ic">⇄</span><span class="txt">MCP</span><span class="nb txt">3</span></button>
+    <button class="nav" data-ecran="modeles"><span class="ic">◆</span><span class="txt">Modèles et GPU</span></button>
+    <div class="groupe">Savoir-faire</div>
+    <button class="nav" data-ecran="commandes"><span class="ic">/</span><span class="txt">Commandes /</span><span class="nb txt">2</span></button>
+    <button class="nav" data-ecran="skills"><span class="ic">✎</span><span class="txt">Skills</span><span class="nb txt">2</span></button>
+    <button class="nav" data-ecran="consignes"><span class="ic">≡</span><span class="txt">Consignes communes</span></button>
+    <div class="groupe">Sûreté</div>
+    <button class="nav" data-ecran="securite"><span class="ic">⛨</span><span class="txt">Sécurité</span></button>
+    <button class="nav" data-ecran="sauvegardes"><span class="ic">↺</span><span class="txt">Sauvegardes</span><span class="nb txt">20</span></button>
+    <button class="nav" data-ecran="guide"><span class="ic">?</span><span class="txt">Guide</span></button>
+    <div class="etat-bas">
+      <span class="pastille ok">GPU RunPod : allumé</span>
+      <span class="pastille ok">IA locale : prête</span>
+      <span class="pastille ok">Config vérifiée</span>
+    </div>
+  </nav>
+
+  <main class="principal">
+
+    <!-- Vue d'ensemble -->
+    <section class="ecran actif" id="accueil">
+      <h1>Vue d'ensemble</h1>
+      <p class="sous">Tout ce que votre agent sait faire, et ce qui tourne en ce moment.</p>
+      <div class="grille">
+        <div class="carte"><div class="etiq">Agent par défaut</div><div class="chiffre">Build</div><div class="etiq">à l'ouverture d'une session</div></div>
+        <div class="carte"><div class="etiq">Agents</div><div class="chiffre">4 + 4</div><div class="etiq">principaux + sous-agents (Equipe)</div></div>
+        <div class="carte"><div class="etiq">MCP actifs</div><div class="chiffre">3</div><div class="etiq">rea · playwright · perplexity</div></div>
+        <div class="carte"><div class="etiq">Modèle par défaut</div><div class="chiffre" style="font-size:17px">Qwen3.8-27B Heretic</div><div class="etiq">GPU RunPod (RTX PRO 6000)</div></div>
+      </div>
+      <h2>Accès rapides</h2>
+      <div class="ligne" style="flex-wrap:wrap">
+        <button class="btn prim" data-aller="agents">+ Nouvel agent</button>
+        <button class="btn" data-aller="equipes">+ Créer une équipe</button>
+        <button class="btn" data-aller="mcp">+ Ajouter un MCP</button>
+        <button class="btn" data-aller="commandes">+ Nouvelle commande /</button>
+        <button class="btn" data-aller="sauvegardes">Revenir à une version précédente</button>
+      </div>
+      <h2>Dernières modifications</h2>
+      <div class="carte">
+        <table>
+          <tr><th>Quand</th><th>Quoi</th><th>Vérification</th></tr>
+          <tr><td>22/10 14:02</td><td>Sécurité : dossier <code>_maintenance</code> interdit à l'agent</td><td><span class="badge ok">acceptée par OpenCode</span></td></tr>
+          <tr><td>19/10 10:41</td><td>Modèle par défaut : <code>runpod/heretic</code></td><td><span class="badge ok">acceptée par OpenCode</span></td></tr>
+          <tr><td>15/10 18:20</td><td>Équipe « Equipe » créée (4 sous-agents)</td><td><span class="badge ok">acceptée par OpenCode</span></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- Mes agents -->
+    <section class="ecran" id="agents">
+      <div class="ligne"><div><h1>Mes agents</h1><p class="sous">Cliquez sur un agent pour voir ce qu'il fait et le modifier.</p></div><span class="espace"></span><button class="btn prim">+ Nouvel agent</button></div>
+      <div class="deux">
+        <div class="liste" id="liste-agents"></div>
+        <div class="carte" id="fiche-agent"></div>
+      </div>
+    </section>
+
+    <!-- Équipes -->
+    <section class="ecran" id="equipes">
+      <h1>Créer une équipe</h1>
+      <p class="sous">Un agent « chef » reçoit votre demande, la découpe et confie chaque morceau à ses sous-agents, en parallèle quand c'est possible.</p>
+      <div class="etapes"><span class="fait">1. Le chef</span><span class="fait">2. Ses sous-agents</span><span>3. Vérifier et créer</span></div>
+      <div class="carte">
+        <div class="champs2">
+          <div class="champ"><label>Nom du chef d'équipe</label><input value="Equipe-Web"></div>
+          <div class="champ"><label>Sa mission en une phrase</label><input value="Analyser un site, corriger son code et vérifier le résultat"></div>
+        </div>
+        <div class="champ"><label>Sous-agents de cette équipe (cochés = le chef peut les appeler, et seulement eux)</label></div>
+        <div class="choix">
+          <label><input type="checkbox" checked><span><b>analyste</b><br><small>Lecture seule : code, config, site cible.</small></span></label>
+          <label><input type="checkbox" checked><span><b>codeur</b><br><small>Écrit la plus petite modification correcte.</small></span></label>
+          <label><input type="checkbox"><span><b>debogueur</b><br><small>Trouve la vraie cause d'un bug, corrige au plus juste.</small></span></label>
+          <label><input type="checkbox" checked><span><b>testeur</b><br><small>Vérifie sans modifier (tests, navigateur).</small></span></label>
+          <label><input type="checkbox"><span><b>+ depuis la bibliothèque…</b><br><small>Ajouter un rôle (sécurité, documentation, revue de code…).</small></span></label>
+        </div>
+        <h2>Ce que l'Atelier va écrire pour vous</h2>
+        <pre>Consignes du chef (générées, modifiables) :
+« Vous dirigez une équipe de 3 sous-agents : analyste (lecture seule), codeur (écrit le code)
+et testeur (vérifie sans modifier). Découpez la demande, confiez chaque partie au bon
+sous-agent, en parallèle quand c'est possible, puis faites la synthèse. »
+
+Droits du chef : appeler analyste, codeur, testeur → Toujours · tout autre sous-agent → Jamais</pre>
+        <div class="ligne" style="margin-top:12px"><span class="espace"></span><button class="btn">Retour</button><button class="btn prim">Créer l'équipe</button></div>
+        <div class="statut">✓ Avant d'écrire : sauvegarde de la config, puis vérification par OpenCode. Si OpenCode refuse, rien n'est modifié.</div>
+      </div>
+      <h2>Équipes existantes</h2>
+      <div class="carte ligne"><span class="puce" style="background:var(--violet)"></span><div><b>Equipe</b><br><small class="etiq">analyste · codeur · debogueur · testeur</small></div><span class="espace"></span><button class="btn">Modifier</button><button class="btn">Dupliquer</button></div>
+    </section>
+
+    <!-- Bibliothèque -->
+    <section class="ecran" id="biblio">
+      <h1>Bibliothèque de modèles d'agents</h1>
+      <p class="sous">Des agents prêts à l'emploi. « Ajouter » en crée une copie dans Mes agents, que vous pouvez ensuite modifier.</p>
+      <input class="recherche" id="cherche-biblio" placeholder="Chercher un rôle (ex. sécurité, documentation, SQL)…">
+      <div class="filtres" id="filtres-biblio"></div>
+      <div class="grille" id="grille-biblio"></div>
+    </section>
+
+    <!-- Outils de base -->
+    <section class="ecran" id="outils">
+      <h1>Outils de base</h1>
+      <p class="sous">Les « mains » de l'agent : ce qu'il peut faire, au-delà de répondre. Les droits de chaque agent disent lesquels il a le droit d'utiliser.</p>
+      <div class="carte"><table id="table-outils"><tr><th>Outil</th><th>Ce qu'il fait</th><th>Réglé par le droit</th></tr></table></div>
+    </section>
+
+    <!-- MCP -->
+    <section class="ecran" id="mcp">
+      <div class="ligne"><div><h1>MCP</h1><p class="sous">Des modules qui ajoutent des outils à l'agent (analyse de programmes, navigateur, recherche web…).</p></div><span class="espace"></span><button class="btn prim">+ Ajouter à la main</button></div>
+      <div class="carte">
+        <table>
+          <tr><th></th><th>MCP</th><th>Rôle</th><th>État</th><th></th></tr>
+          <tr><td><button class="inter" aria-pressed="true" aria-label="Activer rea"></button></td><td><b>rea</b></td><td>Reverse engineering : programmes, pages web, réseau (207 outils)</td><td><span class="badge ok">connecté</span></td><td><button class="btn">Tester</button></td></tr>
+          <tr><td><button class="inter" aria-pressed="true" aria-label="Activer playwright"></button></td><td><b>playwright</b></td><td>Pilote un navigateur à part (clics, formulaires, captures)</td><td><span class="badge ok">connecté</span></td><td><button class="btn">Tester</button></td></tr>
+          <tr><td><button class="inter" aria-pressed="true" aria-label="Activer perplexity"></button></td><td><b>perplexity</b></td><td>Recherche web avec synthèse et sources</td><td><span class="badge ok">connecté</span></td><td><button class="btn">Tester</button></td></tr>
+        </table>
+      </div>
+      <h2>Ajouter depuis vos MCP de C:\MCP</h2>
+      <div class="grille">
+        <div class="carte modele"><h4>history</h4><p>Recherche dans l'historique de vos conversations Claude.</p><button class="btn">+ Ajouter</button></div>
+        <div class="carte modele"><h4>ia-locale</h4><p>Délègue des tâches simples au moteur IA locale.</p><button class="btn">+ Ajouter</button></div>
+        <div class="carte modele"><h4>discord-search</h4><p>Cherche et lit des messages Discord.</p><button class="btn">+ Ajouter</button></div>
+        <div class="carte modele"><h4>Chrome DevTools</h4><p>Pilote votre vrai Chrome, avec vos sessions ouvertes.</p><span class="badge att">à installer</span></div>
+      </div>
+      <h2>Ajouter à la main</h2>
+      <div class="carte">
+        <div class="champs2">
+          <div class="champ"><label>Nom</label><input value="mon-mcp"></div>
+          <div class="champ"><label>Commande</label><input class="mono" value="C:\MCP\mon-mcp\.venv\Scripts\python.exe"></div>
+        </div>
+        <div class="champ"><label>Arguments</label><input class="mono" value="C:\MCP\mon-mcp\server.py"></div>
+        <div class="champs2">
+          <div class="champ"><label>Variable</label><input class="mono" value="API_KEY"></div>
+          <div class="champ"><label>Valeur (secrète)</label><input type="password" value="••••••••••••••••"></div>
+        </div>
+        <div class="ligne"><span class="etiq">La valeur n'est jamais réaffichée. Bouton « Remplacer » pour la changer.</span><span class="espace"></span><button class="btn">Tester la connexion</button><button class="btn prim">Ajouter</button></div>
+      </div>
+    </section>
+
+    <!-- Modèles et GPU -->
+    <section class="ecran" id="modeles">
+      <h1>Modèles et GPU</h1>
+      <p class="sous">Quel « cerveau » utilise chaque agent, et ce qui tourne (et coûte) en ce moment.</p>
+      <div class="grille">
+        <div class="carte">
+          <div class="ligne"><b>GPU loué RunPod</b><span class="espace"></span><span class="badge ok">allumé depuis 2 h 14</span></div>
+          <p class="etiq">RTX PRO 6000 · sert Qwen3.8-27B Heretic Q8</p>
+          <button class="btn dang">Arrêter le GPU</button>
+        </div>
+        <div class="carte">
+          <div class="ligne"><b>IA locale (RTX 5090)</b><span class="espace"></span><span class="badge ok">prête</span></div>
+          <p class="etiq">llama-swap 127.0.0.1:8090 · modèle déchargé après 10 min</p>
+          <button class="btn">Voir les modèles locaux</button>
+        </div>
+      </div>
+      <h2>Modèle par défaut</h2>
+      <div class="carte champ"><select><option>runpod/heretic — Qwen3.8-27B Heretic (GPU loué)</option><option>ia-locale/agent — Qwen3.8-27B (RTX 5090)</option><option>ia-locale/heretic — Qwen3.8-27B Heretic (RTX 5090)</option><option>ia-locale/code — Qwen3.6-35B-A3B, rapide</option></select></div>
+      <h2>Modèle de chaque agent</h2>
+      <div class="carte"><table>
+        <tr><th>Agent</th><th>Modèle</th></tr>
+        <tr><td>Build</td><td><select><option>Celui par défaut</option><option>ia-locale/code</option></select></td></tr>
+        <tr><td>Reverse-Web</td><td><select><option>Celui par défaut</option></select></td></tr>
+        <tr><td>Equipe</td><td><select><option>Celui par défaut</option></select></td></tr>
+        <tr><td>analyste · codeur · debogueur · testeur</td><td><select><option>Celui par défaut</option><option>ia-locale/code (rapide, pour les petites tâches)</option></select></td></tr>
+      </table></div>
+    </section>
+
+    <!-- Commandes / -->
+    <section class="ecran" id="commandes">
+      <div class="ligne"><div><h1>Commandes /</h1><p class="sous">Des raccourcis que <b>vous</b> tapez dans la discussion : ils envoient un message préparé à l'agent choisi.</p></div><span class="espace"></span><button class="btn prim">+ Nouvelle commande</button></div>
+      <div class="note"><b>Commande / ou skill ?</b> Une <b>commande /</b>, c'est vous qui la lancez (<code>/audit-site exemple.com</code>). Une <b>skill</b>, c'est une fiche de méthode que <b>l'agent</b> charge tout seul quand la tâche s'y prête — l'équivalent des skills de Claude Code. Elles sont dans l'écran Skills.</div>
+      <div class="carte">
+        <div class="champs2">
+          <div class="champ"><label>Nom (tapé après /)</label><input class="mono" value="audit-site"></div>
+          <div class="champ"><label>Agent qui la reçoit</label><select><option>Reverse-Web</option><option>Equipe</option><option>Build</option></select></div>
+        </div>
+        <div class="champ"><label>Message envoyé (<code>$ARGUMENTS</code> = ce que vous tapez après la commande)</label><textarea>Analyse le site $ARGUMENTS : technologies, appels réseau, points d'entrée de l'API. Range tout dans projets\$ARGUMENTS.</textarea></div>
+        <div class="ligne"><span class="etiq">Apparaîtra dans la palette et la liste « / » d'OpenCode.</span><span class="espace"></span><button class="btn prim">Enregistrer</button></div>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="ecran" id="skills">
+      <div class="ligne"><div><h1>Skills</h1><p class="sous">Les fiches de méthode que l'agent peut charger. Comme les skills de Claude Code.</p></div><span class="espace"></span><button class="btn prim">+ Nouvelle skill</button></div>
+      <div class="deux">
+        <div class="liste">
+          <button class="item" aria-current="true"><span class="puce" style="background:var(--acc)"></span><span>reverse-web<small>Quel outil REA ou Playwright pour chaque tâche</small></span></button>
+          <button class="item"><span class="puce" style="background:var(--ok)"></span><span>installer-outil<small>Où et comment installer un outil</small></span></button>
+        </div>
+        <div class="carte">
+          <div class="champ"><label>Quand l'agent doit la charger (description)</label><input value="Reverse engineering de sites web : choisir l'outil REA ou Playwright adapté"></div>
+          <div class="champ"><label>Contenu de la fiche</label><textarea style="min-height:180px"># Reverse web
+1. Ouvrir le site dans le Chrome d'analyse (port 9222).
+2. Lister les requêtes réseau : rea.inspect_web_network_capture…</textarea></div>
+          <div class="ligne"><span class="etiq">Agents autorisés à la charger : Build, Reverse-Web, Equipe</span><span class="espace"></span><button class="btn prim">Enregistrer</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Consignes communes -->
+    <section class="ecran" id="consignes">
+      <h1>Consignes communes</h1>
+      <p class="sous">Lues par tous les agents au début de chaque session (fichier <code>AGENTS.md</code>).</p>
+      <div class="carte champ"><textarea style="min-height:260px"># Règles de travail
+- Une mission = un dossier dans projets\.
+- Ne jamais toucher à config\, opencode\, .donnees\ (bloqué).
+- Fiche d'aiguillage : tâche → outil…</textarea>
+      <div class="ligne"><span class="espace"></span><button class="btn prim">Enregistrer</button></div></div>
+    </section>
+
+    <!-- Sécurité -->
+    <section class="ecran" id="securite">
+      <h1>Sécurité</h1>
+      <p class="sous">Ce que tous les agents ont le droit de faire, sauf réglage contraire dans un agent. Les lignes 🔒 protègent l'installation et ne peuvent pas être retirées ici.</p>
+      <div class="carte"><table>
+        <tr><th>Règle</th><th>Effet</th></tr>
+        <tr><td class="cadenas">🔒 Sortir du dossier D:\IA LOCAL</td><td><span class="badge non">Jamais</span></td></tr>
+        <tr><td class="cadenas">🔒 Modifier config\, opencode\, .donnees\</td><td><span class="badge non">Jamais</span></td></tr>
+        <tr><td class="cadenas">🔒 Lire ou modifier _maintenance\</td><td><span class="badge non">Jamais</span></td></tr>
+        <tr><td>Lancer une commande</td><td><span class="badge att">Sur demande</span> sauf <code>ls</code>, <code>dir</code>, <code>pwd</code>, <code>git status/diff/log</code> → <span class="badge ok">Toujours</span></td></tr>
+        <tr><td><code>git push</code>, <code>docker …</code>, <code>format …</code></td><td><span class="badge non">Jamais</span></td></tr>
+        <tr><td>Lire une page web · chercher sur internet</td><td><span class="badge att">Sur demande</span></td></tr>
+        <tr><td>Fournisseurs de modèles</td><td>seulement <code>ia-locale</code> et <code>runpod</code></td></tr>
+      </table>
+      <div class="ligne" style="margin-top:10px"><button class="btn">+ Ajouter une règle</button><span class="espace"></span><button class="btn">Mode expert</button></div></div>
+    </section>
+
+    <!-- Sauvegardes -->
+    <section class="ecran" id="sauvegardes">
+      <h1>Sauvegardes</h1>
+      <p class="sous">Une copie de la config est faite avant chaque enregistrement. Les 20 dernières sont gardées.</p>
+      <div class="carte"><table>
+        <tr><th>Date</th><th>Changement</th><th></th></tr>
+        <tr><td>22/10 14:02</td><td>Sécurité : _maintenance interdit</td><td><button class="btn">Comparer</button> <button class="btn">Restaurer</button></td></tr>
+        <tr><td>21/10 09:15</td><td>Agent « testeur » : consignes modifiées</td><td><button class="btn">Comparer</button> <button class="btn">Restaurer</button></td></tr>
+        <tr><td>19/10 10:41</td><td>Modèle par défaut → runpod/heretic</td><td><button class="btn">Comparer</button> <button class="btn">Restaurer</button></td></tr>
+      </table></div>
+    </section>
+
+    <!-- Guide -->
+    <section class="ecran" id="guide">
+      <h1>Guide</h1>
+      <p class="sous">Un wiki avec captures d'écran, comme pour Chantiers et le Panel GitHub : chaque écran de l'Atelier expliqué pas à pas.</p>
+      <div class="grille">
+        <div class="carte"><b>Premiers pas</b><p class="etiq">Ouvrir l'Atelier, lire la vue d'ensemble, revenir en arrière.</p></div>
+        <div class="carte"><b>Créer un agent</b><p class="etiq">Depuis zéro ou depuis la bibliothèque, régler ses droits.</p></div>
+        <div class="carte"><b>Monter une équipe</b><p class="etiq">Un chef et ses sous-agents, exemple complet.</p></div>
+        <div class="carte"><b>Brancher un MCP</b><p class="etiq">Depuis C:\MCP ou à la main, tester la connexion.</p></div>
+        <div class="carte"><b>Commandes et skills</b><p class="etiq">La différence, et quand utiliser l'une ou l'autre.</p></div>
+        <div class="carte"><b>Si quelque chose casse</b><p class="etiq">Restaurer une sauvegarde, lire une erreur d'OpenCode.</p></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- =================== CE QUI CHANGE DANS OPENCODE =================== -->
+<div class="oc" id="vue-oc">
+  <div class="col">
+    <div class="lig act">▦ Accueil</div>
+    <div class="lig">✎ Nouvelle session</div>
+    <div class="lig" style="margin-top:10px">▣ Session</div>
+    <div class="bas">
+      <div class="lig nouveau"><span class="pastille ok"></span> GPU RunPod · IA locale</div>
+      <div class="lig nouveau">◆ Atelier</div>
+      <div class="lig nouveau">⚙ Paramètres</div>
+      <div class="lig nouveau">? Aide</div>
+    </div>
+  </div>
+  <div class="zone">
+    <div class="compo">
+      <div class="place">Demandez n'importe quoi, / pour les commandes, @ pour le contexte…</div>
+      <div class="ctrl">＋ <b style="color:var(--texte)">Build ⌄</b> <span class="qmark" title="À quoi servent les agents ?">?</span> &nbsp; Qwen3.8-27B Heretic ⌄</div>
+      <div class="menu-ag">
+        <div class="opt sel"><b>Build ✓</b><small>L'agent par défaut : lit, écrit, lance des commandes et utilise les MCP, selon vos droits.</small></div>
+        <div class="opt"><b>Plan</b><small>Lecture seule : explore et propose un plan, sans rien modifier.</small></div>
+        <div class="opt"><b>Reverse-Web</b><small>Reverse engineering de sites web avec REA et Playwright.</small></div>
+        <div class="opt"><b>Equipe</b><small>Chef de projet : confie le travail à analyste, codeur, debogueur et testeur.</small></div>
+      </div>
+    </div>
+    <div class="carte legende">
+      <b>Ce qui est ajouté <span class="nouv">(en pointillés bleus)</span></b>
+      <ul style="padding-left:18px;margin:8px 0 0">
+        <li>En bas de la colonne de gauche : <b>pastille d'état</b>, <b>Atelier</b>, <b>Paramètres</b>, <b>Aide</b>, toujours visibles.</li>
+        <li>Dans le menu des agents : une <b>description</b> sous chaque nom.</li>
+        <li>Le <b>?</b> à côté du menu ouvre la fiche de l'agent dans l'Atelier.</li>
+        <li>Le reste de la fenêtre ne change pas.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// Bibliothèque de modèles d'agents : rôles inspirés de la collection VoltAgent « awesome-claude-code-subagents »
+// (≈ 160 rôles, octobre 2026), choisis et décrits en français.
+// droits : lecture = lecture seule, modif = modifie des fichiers, shell = lance des commandes, web = internet, sous = appelle des sous-agents
+window.BIBLIO = [
+  { cat: "Développement", nom: "Développeur fullstack", desc: "Réalise une fonctionnalité de bout en bout : interface, serveur, base de données, tests.", droits: ["modif", "shell"] },
+  { cat: "Développement", nom: "Développeur backend", desc: "Écrit des API et services serveur solides : routes, validation, gestion des erreurs.", droits: ["modif", "shell"] },
+  { cat: "Développement", nom: "Développeur frontend", desc: "Construit des interfaces web (React, Vue, Svelte…) propres, accessibles et réactives.", droits: ["modif", "shell"] },
+  { cat: "Développement", nom: "Architecte d'API", desc: "Conçoit des API REST ou GraphQL claires : routes, formats, versions, documentation.", droits: ["lecture"] },
+  { cat: "Développement", nom: "Développeur desktop", desc: "Applis de bureau (Electron, Tauri) : fenêtres, menus, mises à jour, empaquetage.", droits: ["modif", "shell"] },
+  { cat: "Développement", nom: "Développeur mobile", desc: "Applis Android/iOS multiplateformes (React Native, Flutter, Expo).", droits: ["modif", "shell"] },
+  { cat: "Développement", nom: "Spécialiste temps réel", desc: "WebSockets, webhooks et flux d'événements : connexion, reprise, ordre des messages.", droits: ["modif", "shell"] },
+  { cat: "Développement", nom: "Développeur de CLI", desc: "Crée des outils en ligne de commande pratiques : options, aide, sorties lisibles.", droits: ["modif", "shell"] },
+  { cat: "Développement", nom: "Développeur de MCP", desc: "Écrit des serveurs MCP (Python ou Node) qui ajoutent des outils à un agent.", droits: ["modif", "shell"] },
+  { cat: "Développement", nom: "Intégrateur de paiement", desc: "Branche un service de paiement en mode test : formulaires, webhooks, remboursements.", droits: ["modif", "shell"] },
+
+  { cat: "Langages", nom: "Expert Python", desc: "Code Python moderne : typage, environnements virtuels, paquets, tests avec pytest.", droits: ["modif", "shell"] },
+  { cat: "Langages", nom: "Expert TypeScript", desc: "Types stricts, génériques, configuration de compilation, migration depuis JavaScript.", droits: ["modif", "shell"] },
+  { cat: "Langages", nom: "Expert C#/.NET", desc: "Applications .NET 8 : projets, NuGet, async, tests, publication.", droits: ["modif", "shell"] },
+  { cat: "Langages", nom: "Expert C++", desc: "Code C++ performant et sûr : mémoire, compilation, CMake, profilage.", droits: ["modif", "shell"] },
+  { cat: "Langages", nom: "Expert Rust", desc: "Programmes système en Rust : propriété, erreurs, cargo, performances.", droits: ["modif", "shell"] },
+  { cat: "Langages", nom: "Expert Go", desc: "Services Go concurrents : goroutines, canaux, modules, tests.", droits: ["modif", "shell"] },
+  { cat: "Langages", nom: "Expert Java/Kotlin", desc: "Projets JVM : Gradle/Maven, Spring Boot, tests, structure en couches.", droits: ["modif", "shell"] },
+  { cat: "Langages", nom: "Expert PHP", desc: "PHP moderne, Laravel ou Symfony : routes, ORM, sécurité des formulaires.", droits: ["modif", "shell"] },
+  { cat: "Langages", nom: "Expert SQL", desc: "Écrit et optimise des requêtes : jointures, index, plans d'exécution.", droits: ["lecture", "shell"] },
+  { cat: "Langages", nom: "Expert PowerShell", desc: "Scripts PowerShell 5.1 et 7 fiables : modules, erreurs, compatibilité Windows.", droits: ["modif", "shell"] },
+
+  { cat: "Qualité & tests", nom: "Relecteur de code", desc: "Relit un changement et classe les problèmes par gravité, avec un verdict clair.", droits: ["lecture"] },
+  { cat: "Qualité & tests", nom: "Automaticien de tests", desc: "Écrit des tests automatiques (unitaires, intégration) et les branche au projet.", droits: ["modif", "shell"] },
+  { cat: "Qualité & tests", nom: "Testeur d'interface", desc: "Parcourt l'appli dans un navigateur comme un utilisateur et note chaque anomalie.", droits: ["lecture", "shell"] },
+  { cat: "Qualité & tests", nom: "Testeur d'accessibilité", desc: "Vérifie contrastes, clavier, lecteurs d'écran, et propose les corrections.", droits: ["lecture", "shell"] },
+  { cat: "Qualité & tests", nom: "Ingénieur performances", desc: "Mesure ce qui est lent (temps, mémoire) et propose des optimisations chiffrées.", droits: ["lecture", "shell"] },
+  { cat: "Qualité & tests", nom: "Relecteur d'architecture", desc: "Évalue la structure d'un projet : dépendances, découpage, dette technique.", droits: ["lecture"] },
+  { cat: "Qualité & tests", nom: "Spécialiste du refactoring", desc: "Réorganise le code sans changer son comportement, par petites étapes testées.", droits: ["modif", "shell"] },
+  { cat: "Qualité & tests", nom: "Modernisateur de code ancien", desc: "Fait évoluer un vieux projet vers des outils récents, sans tout réécrire.", droits: ["modif", "shell"] },
+
+  { cat: "Débogage", nom: "Débogueur", desc: "Reproduit un bug, trouve sa vraie cause et corrige au plus juste.", droits: ["modif", "shell"] },
+  { cat: "Débogage", nom: "Détective d'erreurs", desc: "Lit les journaux et traces d'erreur pour remonter à l'origine d'un plantage.", droits: ["lecture", "shell"] },
+  { cat: "Débogage", nom: "Coordinateur d'incident", desc: "Face à une panne : rassemble les indices, priorise, propose un plan de remise en route.", droits: ["lecture", "shell"] },
+
+  { cat: "Sécurité", nom: "Relecteur sécurité du code", desc: "Cherche les failles courantes dans votre code (injections, secrets, droits) et propose les corrections.", droits: ["lecture"] },
+  { cat: "Sécurité", nom: "Durcissement Windows", desc: "Vérifie et renforce la configuration de sécurité d'un poste ou d'un script Windows.", droits: ["lecture", "shell"] },
+  { cat: "Sécurité", nom: "Conformité RGPD", desc: "Repère les données personnelles traitées par un projet et ce qu'il faut documenter.", droits: ["lecture"] },
+  { cat: "Sécurité", nom: "Gardien des dépendances", desc: "Liste les bibliothèques du projet, leurs versions et leurs alertes connues.", droits: ["lecture", "shell", "web"] },
+
+  { cat: "Infrastructure", nom: "Ingénieur DevOps", desc: "Automatise construction, tests et déploiement (CI/CD).", droits: ["modif", "shell"] },
+  { cat: "Infrastructure", nom: "Expert Docker", desc: "Écrit et allège des Dockerfile et docker-compose, diagnostique les conteneurs.", droits: ["modif", "shell"] },
+  { cat: "Infrastructure", nom: "Administrateur de base de données", desc: "Sauvegardes, migrations, droits et santé des bases (PostgreSQL, MySQL, SQLite).", droits: ["lecture", "shell"] },
+  { cat: "Infrastructure", nom: "Ingénieur réseau", desc: "Analyse une configuration réseau : DNS, ports, pare-feu, proxys.", droits: ["lecture", "shell"] },
+  { cat: "Infrastructure", nom: "Architecte cloud", desc: "Conçoit une infrastructure cloud simple et peu coûteuse.", droits: ["lecture", "web"] },
+
+  { cat: "Windows & M365", nom: "Administrateur Windows", desc: "Active Directory, DNS, DHCP, stratégies de groupe : scripts et vérifications.", droits: ["lecture", "shell"] },
+  { cat: "Windows & M365", nom: "Administrateur Microsoft 365", desc: "Exchange Online, Teams, SharePoint : comptes, licences, boîtes partagées.", droits: ["lecture", "shell"] },
+  { cat: "Windows & M365", nom: "Architecte d'interfaces PowerShell", desc: "Petites applis Windows en PowerShell (WinForms, WPF) pour des outils internes.", droits: ["modif", "shell"] },
+
+  { cat: "Données & IA", nom: "Analyste de données", desc: "Explore un jeu de données, en tire les chiffres clés et des graphiques.", droits: ["lecture", "shell"] },
+  { cat: "Données & IA", nom: "Ingénieur de données", desc: "Construit des chaînes d'import et de nettoyage de données fiables.", droits: ["modif", "shell"] },
+  { cat: "Données & IA", nom: "Ingénieur prompts", desc: "Améliore des consignes d'agents et de modèles, et les teste sur des exemples.", droits: ["modif"] },
+  { cat: "Données & IA", nom: "Architecte LLM", desc: "Choisit modèles, contexte et outils pour une appli d'IA locale ou distante.", droits: ["lecture", "web"] },
+  { cat: "Données & IA", nom: "Ingénieur ML", desc: "Entraîne, évalue et déploie des modèles d'apprentissage automatique.", droits: ["modif", "shell"] },
+
+  { cat: "Documentation", nom: "Rédacteur technique", desc: "Écrit des guides clairs, étape par étape, pour un public non technique.", droits: ["modif"] },
+  { cat: "Documentation", nom: "Générateur de LISEZ-MOI", desc: "Rédige le LISEZ-MOI d'un projet : rôle, installation, utilisation.", droits: ["modif"] },
+  { cat: "Documentation", nom: "Documentaliste d'API", desc: "Documente chaque route d'une API avec exemples de requêtes et réponses.", droits: ["modif"] },
+  { cat: "Documentation", nom: "Gardien de la doc", desc: "Repère la documentation qui ne correspond plus au code et la met à jour.", droits: ["modif"] },
+  { cat: "Documentation", nom: "Correcteur de style", desc: "Rend un texte plus naturel et plus précis, sans tics d'écriture d'IA.", droits: ["modif"] },
+
+  { cat: "Recherche", nom: "Chercheur", desc: "Fait une recherche approfondie sur un sujet et rend une synthèse sourcée.", droits: ["lecture", "web"] },
+  { cat: "Recherche", nom: "Spécialiste de la recherche web", desc: "Trouve l'information précise (doc, version, prix) avec les bonnes requêtes.", droits: ["lecture", "web"] },
+  { cat: "Recherche", nom: "Analyste de la concurrence", desc: "Compare des produits ou outils concurrents : fonctions, prix, points forts.", droits: ["lecture", "web"] },
+  { cat: "Recherche", nom: "Validateur d'idées", desc: "Passe une idée de projet au crible et rend un avis franc : on y va ou pas.", droits: ["lecture", "web"] },
+  { cat: "Recherche", nom: "Penseur « premiers principes »", desc: "Décompose un problème jusqu'à ses bases pour trouver une solution simple.", droits: ["lecture"] },
+
+  { cat: "Organisation", nom: "Chef d'équipe", desc: "Découpe une demande et la répartit entre ses sous-agents, puis fait la synthèse.", droits: ["lecture", "sous"] },
+  { cat: "Organisation", nom: "Planificateur", desc: "Transforme une demande en plan d'étapes vérifiables, avant toute modification.", droits: ["lecture"] },
+  { cat: "Organisation", nom: "Chef de projet", desc: "Suit les tâches, les priorités et ce qui bloque, et tient un point d'avancement.", droits: ["lecture", "modif"] },
+  { cat: "Organisation", nom: "Gestionnaire de contexte", desc: "Résume l'état d'un long chantier pour qu'une nouvelle session reprenne sans rien perdre.", droits: ["lecture", "modif"] },
+  { cat: "Organisation", nom: "Synthétiseur", desc: "Rassemble les résultats de plusieurs agents en un rapport unique et clair.", droits: ["lecture"] },
+
+  { cat: "Jeux & 3D", nom: "Développeur de jeux", desc: "Mécaniques, boucles de jeu, équilibrage et outils pour un moteur (Unity, Godot…).", droits: ["modif", "shell"] },
+  { cat: "Jeux & 3D", nom: "Concepteur de niveaux", desc: "Propose des cartes, quêtes et rencontres cohérentes avec l'univers du jeu.", droits: ["modif"] },
+  { cat: "Jeux & 3D", nom: "Équilibreur de gameplay", desc: "Analyse les statistiques (dégâts, coûts, butins) et propose des réglages.", droits: ["lecture", "shell"] },
+
+  { cat: "Web & contenu", nom: "Spécialiste SEO", desc: "Améliore le référencement d'un site : balises, structure, vitesse, contenu.", droits: ["lecture", "web"] },
+  { cat: "Web & contenu", nom: "Rédacteur de pages d'accueil", desc: "Écrit des textes de site qui expliquent clairement et donnent envie.", droits: ["modif"] },
+  { cat: "Web & contenu", nom: "Expert WordPress", desc: "Thèmes, extensions et réglages WordPress, performances et sécurité de base.", droits: ["modif", "shell"] }
+];
+</script>
+<script>
+(function () {
+  // --- Données de la maquette ---
+  var agents = [
+    { groupe: "Agents principaux", id: "build", nom: "Build", couleur: "var(--acc)", role: "Principal", origine: "OpenCode (description modifiée par vous)",
+      resume: "L'agent par défaut : il lit, écrit, lance des commandes et utilise les MCP, dans les limites de vos droits.",
+      detail: "C'est l'agent « tout-terrain » d'OpenCode. Il n'a pas de consignes particulières : il suit vos consignes communes et vos règles de sécurité. À choisir pour du développement courant dans projets\\.",
+      droits: ["oui", "dem", "dem", "oui"] },
+    { groupe: "Agents principaux", id: "plan", nom: "Plan", couleur: "var(--ok)", role: "Principal", origine: "OpenCode",
+      resume: "Lecture seule : explore le code et propose un plan avant de commencer, sans rien modifier.",
+      detail: "Il peut lire, chercher et vous poser des questions, mais ne peut écrire que ses propres plans. À utiliser avant un gros chantier, puis passer à Build ou Equipe pour l'exécution.",
+      droits: ["non", "dem", "dem", "oui"] },
+    { groupe: "Agents principaux", id: "reverse-web", nom: "Reverse-Web", couleur: "var(--att)", role: "Principal", origine: "Vous",
+      resume: "Reverse engineering de sites web avec REA et Playwright.",
+      detail: "Il charge la skill « reverse-web » pour savoir quel outil utiliser, et range ses résultats dans projets\\<nom>.",
+      droits: ["oui", "dem", "dem", "non"] },
+    { groupe: "Agents principaux", id: "equipe", nom: "Equipe", couleur: "var(--violet)", role: "Principal (chef d'équipe)", origine: "Vous",
+      resume: "Chef de projet : découpe le travail et le confie à ses 4 sous-agents, en parallèle quand c'est possible.",
+      detail: "Il ne peut appeler que analyste, codeur, debogueur et testeur. Il fait ensuite la synthèse de leurs résultats.",
+      droits: ["oui", "dem", "dem", "oui"] },
+    { groupe: "Sous-agents (de l'équipe)", id: "analyste", nom: "analyste", couleur: "#58a6ff", role: "Sous-agent", origine: "Vous",
+      resume: "Lecture seule : lit le code, la config et le site cible, répond avec fichiers, lignes et sélecteurs.",
+      detail: "Il ne modifie rien et ne lance que ls, dir, pwd.", droits: ["non", "non", "dem", "non"] },
+    { groupe: "Sous-agents (de l'équipe)", id: "codeur", nom: "codeur", couleur: "#3fb950", role: "Sous-agent", origine: "Vous",
+      resume: "Fait la plus petite modification correcte et liste les fichiers changés.", detail: "", droits: ["oui", "dem", "dem", "non"] },
+    { groupe: "Sous-agents (de l'équipe)", id: "debogueur", nom: "debogueur", couleur: "#f0883e", role: "Sous-agent", origine: "Vous",
+      resume: "Reproduit le problème, trouve la vraie cause, corrige au plus juste et explique.", detail: "", droits: ["oui", "dem", "dem", "non"] },
+    { groupe: "Sous-agents (de l'équipe)", id: "testeur", nom: "testeur", couleur: "#d2a8ff", role: "Sous-agent", origine: "Vous",
+      resume: "Lance tests, scripts et navigateur pour vérifier, sans modifier le code.", detail: "", droits: ["non", "dem", "dem", "non"] },
+    { groupe: "Fournis par OpenCode", id: "general", nom: "General", couleur: "var(--faible)", role: "Sous-agent", origine: "OpenCode",
+      resume: "Sous-agent polyvalent pour les recherches complexes et les tâches en plusieurs étapes, lancées en parallèle.",
+      detail: "Utilisé par un agent principal quand il veut faire plusieurs choses à la fois.", droits: ["oui", "dem", "dem", "non"] },
+    { groupe: "Fournis par OpenCode", id: "explore", nom: "Explore", couleur: "var(--faible)", role: "Sous-agent", origine: "OpenCode",
+      resume: "Sous-agent rapide qui fouille le code : trouver des fichiers, chercher des mots-clés, répondre à « où est… ? ».",
+      detail: "Lecture seule : il ne peut rien modifier.", droits: ["non", "dem", "dem", "non"] },
+    { groupe: "Fournis par OpenCode", id: "internes", nom: "Compaction · Title · Summary", couleur: "var(--faible)", role: "Interne (caché)", origine: "OpenCode",
+      resume: "Agents techniques : résumer une longue conversation, lui donner un titre, résumer une session.",
+      detail: "Vous ne les choisissez jamais : OpenCode les utilise tout seul. Ils n'ont aucun outil.", droits: ["non", "non", "non", "non"] }
+  ];
+  var nomsDroits = [
+    ["Modifier des fichiers", "créer, modifier, supprimer dans projets\\"],
+    ["Lancer des commandes", "PowerShell / cmd (sauf les commandes sans risque)"],
+    ["Aller sur internet", "lire des pages, faire des recherches"],
+    ["Appeler des sous-agents", "confier une partie du travail"]
+  ];
+  var outils = [
+    ["read", "Lire un fichier, ou lister le contenu d'un dossier.", "read"],
+    ["write", "Créer un fichier, ou le remplacer entièrement.", "edit"],
+    ["edit", "Modifier un passage précis d'un fichier.", "edit"],
+    ["patch", "Faire plusieurs modifications d'un coup (ajouter, changer, supprimer des fichiers).", "edit"],
+    ["glob", "Trouver des fichiers par leur nom (ex. src/**/*.ts).", "glob"],
+    ["grep", "Chercher un texte dans le contenu des fichiers.", "grep"],
+    ["shell", "Lancer une commande (PowerShell, cmd, git, python…).", "shell"],
+    ["webfetch", "Lire une page web à une adresse précise.", "webfetch"],
+    ["websearch", "Faire une recherche sur internet.", "websearch"],
+    ["subagent", "Confier une tâche à un sous-agent, qui travaille dans sa propre conversation.", "subagent"],
+    ["skill", "Charger une fiche de méthode (skill).", "skill"],
+    ["question", "Vous poser une question à choix pendant le travail.", "question"],
+    ["ressources MCP", "Lister et lire les documents fournis par un MCP.", "opencode_read_mcp_resource"]
+  ];
+
+  // --- Navigation des écrans ---
+  var navs = document.querySelectorAll(".nav");
+  function ouvrir(id) {
+    navs.forEach(function (n) { n.toggleAttribute("aria-current", n.dataset.ecran === id); if (n.dataset.ecran === id) n.setAttribute("aria-current", "page"); });
+    document.querySelectorAll(".ecran").forEach(function (e) { e.classList.toggle("actif", e.id === id); });
+    document.querySelector(".principal").scrollTop = 0;
+  }
+  navs.forEach(function (n) { n.addEventListener("click", function () { ouvrir(n.dataset.ecran); }); });
+  document.querySelectorAll("[data-aller]").forEach(function (b) { b.addEventListener("click", function () { ouvrir(b.dataset.aller); }); });
+
+  // --- Vues : Atelier / OpenCode ---
+  document.querySelectorAll("[data-vue]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll("[data-vue]").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+      document.getElementById("vue-atelier").classList.toggle("active", b.dataset.vue === "atelier");
+      document.getElementById("vue-oc").classList.toggle("active", b.dataset.vue === "oc");
+    });
+  });
+  var racine = document.documentElement;
+  document.getElementById("theme").addEventListener("click", function () {
+    var sombre = racine.dataset.theme ? racine.dataset.theme === "dark" : !matchMedia("(prefers-color-scheme: light)").matches;
+    racine.dataset.theme = sombre ? "light" : "dark";
+  });
+
+  // --- Mes agents ---
+  var liste = document.getElementById("liste-agents"), fiche = document.getElementById("fiche-agent");
+  function segm(valeur, i) {
+    var v = [["oui", "Toujours", "v-oui"], ["dem", "Sur demande", "v-dem"], ["non", "Jamais", "v-non"]];
+    return '<span class="segm">' + v.map(function (x) {
+      return '<button type="button" class="' + x[2] + '" aria-pressed="' + (x[0] === valeur) + '" data-d="' + i + '">' + x[1] + "</button>";
+    }).join("") + "</span>";
+  }
+  function afficher(a) {
+    liste.querySelectorAll(".item").forEach(function (it) { it.setAttribute("aria-current", it.dataset.id === a.id); });
+    var opencode = a.origine.indexOf("OpenCode") === 0;
+    fiche.innerHTML =
+      '<div class="ligne"><span class="puce" style="background:' + a.couleur + ';width:14px;height:14px"></span><h1 style="margin:0">' + a.nom + "</h1>" +
+      '<span class="badge acc">' + a.role + '</span><span class="badge">créé par : ' + a.origine + "</span></div>" +
+      '<p style="margin:10px 0 4px"><b>À quoi il sert.</b> ' + a.resume + "</p>" +
+      (a.detail ? '<p class="etiq" style="margin:0 0 14px">' + a.detail + "</p>" : "<p></p>") +
+      (opencode && a.id === "internes" ? '<div class="note">Agents internes : rien à régler ici.</div>' :
+      '<div class="champs2"><div class="champ"><label>Nom</label><input value="' + a.nom + '"></div>' +
+      '<div class="champ"><label>Rôle</label><select><option>' + (a.role.indexOf("Sous") === 0 ? "Sous-agent (appelé par un chef)" : "Principal (dans le menu des agents)") + "</option><option>Les deux</option></select></div></div>" +
+      '<div class="champ"><label>Description (affichée dans le menu des agents)</label><input value="' + a.resume.replace(/"/g, "&quot;") + '"></div>' +
+      '<div class="champ"><label>Consignes (ce que l\'agent lit avant chaque tâche)</label><textarea>' + (opencode ? "(consignes d'origine d'OpenCode — ajoutez les vôtres ici)" : "(ici, les consignes actuelles de « " + a.nom + " », lues dans votre config)") + "</textarea></div>" +
+      '<div class="champs2"><div class="champ"><label>Modèle</label><select><option>Celui par défaut (runpod/heretic)</option><option>ia-locale/code (rapide)</option></select></div>' +
+      '<div class="champ"><label>Couleur</label><input type="color" value="#4f8cff" style="height:36px;padding:3px"></div></div>' +
+      "<h2>Ses droits</h2><div class=\"droits\">" + nomsDroits.map(function (d, i) {
+        return '<div class="droit"><div>' + d[0] + "<small>" + d[1] + "</small></div>" + segm(a.droits[i], i) + "</div>";
+      }).join("") + "</div>" +
+      "<details><summary>Mode expert : les règles exactes écrites dans opencode.json</summary><pre>" +
+      JSON.stringify([{ action: "edit", resource: "*", effect: a.droits[0] === "non" ? "deny" : "allow" }, { action: "shell", resource: "*", effect: "ask" }], null, 2) + "</pre></details>" +
+      '<div class="ligne" style="margin-top:16px"><button class="btn">Dupliquer</button>' + (opencode ? "" : '<button class="btn dang">Supprimer</button>') +
+      '<span class="espace"></span><button class="btn prim">Enregistrer</button></div>' +
+      '<div class="statut">✓ Enregistrer = sauvegarde de la config, vérification par OpenCode, puis rechargement de l\'agent (pas besoin de le fermer).</div>');
+    fiche.querySelectorAll(".segm button").forEach(function (b) {
+      b.addEventListener("click", function () { b.parentNode.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); });
+    });
+  }
+  var groupeCourant = "";
+  agents.forEach(function (a) {
+    if (a.groupe !== groupeCourant) { groupeCourant = a.groupe; var h = document.createElement("h3"); h.textContent = a.groupe; liste.appendChild(h); }
+    var b = document.createElement("button");
+    b.className = "item"; b.dataset.id = a.id;
+    b.innerHTML = '<span class="puce" style="background:' + a.couleur + '"></span><span>' + a.nom + "<small>" + a.resume + "</small></span>";
+    b.addEventListener("click", function () { afficher(a); });
+    liste.appendChild(b);
+  });
+  afficher(agents[0]);
+
+  // --- Outils de base ---
+  var t = document.getElementById("table-outils");
+  outils.forEach(function (o) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td><code>" + o[0] + "</code></td><td>" + o[1] + "</td><td><code>" + o[2] + "</code></td>";
+    t.appendChild(tr);
+  });
+
+  // --- Bibliothèque (remplie par biblio.js) ---
+  var biblio = window.BIBLIO || [];
+  document.getElementById("nb-biblio").textContent = biblio.length;
+  var cats = ["Tout"].concat(biblio.map(function (m) { return m.cat; }).filter(function (c, i, l) { return l.indexOf(c) === i; }));
+  var filtres = document.getElementById("filtres-biblio"), grille = document.getElementById("grille-biblio"), cherche = document.getElementById("cherche-biblio");
+  var catActive = "Tout";
+  var badges = { lecture: '<span class="badge ok">lecture seule</span>', modif: '<span class="badge att">modifie des fichiers</span>', shell: '<span class="badge att">commandes</span>', web: '<span class="badge acc">internet</span>', sous: '<span class="badge acc">sous-agents</span>' };
+  function dessiner() {
+    var q = cherche.value.toLowerCase();
+    grille.innerHTML = "";
+    biblio.filter(function (m) {
+      return (catActive === "Tout" || m.cat === catActive) && (!q || (m.nom + m.desc + m.cat).toLowerCase().indexOf(q) >= 0);
+    }).forEach(function (m) {
+      var d = document.createElement("div");
+      d.className = "carte modele";
+      d.innerHTML = '<div class="ligne"><h4>' + m.nom + '</h4><span class="espace"></span><span class="etiq">' + m.cat + "</span></div><p>" + m.desc + '</p><div class="ligne">' +
+        m.droits.map(function (x) { return badges[x] || ""; }).join("") + '<span class="espace"></span><button class="btn">+ Ajouter</button></div>';
+      grille.appendChild(d);
+    });
+  }
+  cats.forEach(function (c) {
+    var b = document.createElement("button");
+    b.textContent = c; b.setAttribute("aria-pressed", c === "Tout");
+    b.addEventListener("click", function () { catActive = c; filtres.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); dessiner(); });
+    filtres.appendChild(b);
+  });
+  cherche.addEventListener("input", dessiner);
+  dessiner();
+
+  document.querySelectorAll(".inter").forEach(function (i) { i.addEventListener("click", function () { i.setAttribute("aria-pressed", i.getAttribute("aria-pressed") !== "true"); }); });
+})();
+</script>
+</body>
+</html>

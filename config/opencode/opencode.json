@@ -1,0 +1,443 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "runpod/heretic",
+  "providers": {
+    "ia-locale": {
+      "name": "IA locale (RTX 5090)",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "http://127.0.0.1:8090/v1",
+        "headerTimeout": 900000,
+        "chunkTimeout": 900000
+      },
+      "models": {
+        "agent": {
+          "name": "Qwen3.8-27B (agent, réflexion)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 98304,
+            "output": 16384
+          },
+          "compatibility": {
+            "reasoningField": "reasoning_content"
+          }
+        },
+        "code": {
+          "name": "Qwen3.6-35B-A3B (rapide, sans réflexion)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          }
+        },
+        "heretic": {
+          "name": "Qwen3.8-27B Heretic (sans censure, réflexion)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 16384
+          },
+          "compatibility": {
+            "reasoningField": "reasoning_content"
+          }
+        }
+      }
+    },
+    "runpod": {
+      "name": "GPU loué (RunPod RTX PRO 6000)",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "https://TON-POD-8080.proxy.runpod.net/v1",
+        "apiKey": "XXX",
+        "headerTimeout": 900000,
+        "chunkTimeout": 900000
+      },
+      "models": {
+        "heretic": {
+          "name": "Qwen3.8-27B Heretic Q8 (GPU loué RunPod)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 262144,
+            "output": 16384
+          },
+          "compatibility": {
+            "reasoningField": "reasoning_content"
+          }
+        }
+      }
+    }
+  },
+  "plugins": [
+    "-opencode.provider.ollama",
+    "-opencode.provider.lmstudio"
+  ],
+  "update": "notify",
+  "default_agent": "build",
+  "compaction": {
+    "auto": true,
+    "keep": {
+      "tokens": 20000
+    },
+    "buffer": 16000
+  },
+  "mcp": {
+    "servers": {
+      "rea": {
+        "type": "local",
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "C:\\MCP\\rea-mcp\\node_modules\\rea-agents\\scripts\\rea.mjs",
+          "mcp"
+        ],
+        "environment": {
+          "GHIDRA_INSTALL_DIR": "C:\\MCP\\rea-mcp\\outils\\ghidra_12.1.4_PUBLIC",
+          "JAVA_HOME": "C:\\MCP\\rea-mcp\\outils\\jdk-21.0.12.1+1",
+          "USERPROFILE": "C:\\Users\\<toi>",
+          "HOME": "C:\\Users\\<toi>"
+        },
+        "timeout": {
+          "startup": 60000
+        }
+      },
+      "playwright": {
+        "type": "local",
+        "command": [
+          "cmd",
+          "/c",
+          "npx",
+          "-y",
+          "@playwright/mcp@latest"
+        ],
+        "codemode": false,
+        "environment": {
+          "USERPROFILE": "C:\\Users\\<toi>",
+          "HOME": "C:\\Users\\<toi>"
+        },
+        "timeout": {
+          "startup": 60000
+        }
+      },
+      "perplexity": {
+        "type": "local",
+        "command": [
+          "C:\\MCP\\perplexity-mcp\\.venv\\Scripts\\python.exe",
+          "C:\\MCP\\perplexity-mcp\\server.py"
+        ],
+        "codemode": false,
+        "environment": {
+          "USERPROFILE": "C:\\Users\\<toi>",
+          "HOME": "C:\\Users\\<toi>"
+        }
+      }
+    }
+  },
+  "permissions": [
+    {
+      "action": "external_directory",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "config/*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "D:/IA LOCAL/config/*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "opencode/*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "D:/IA LOCAL/opencode/*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": ".donnees/*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "D:/IA LOCAL/.donnees/*",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "_maintenance/*",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "D:/IA LOCAL/_maintenance/*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "_maintenance/*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "D:/IA LOCAL/_maintenance/*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "ls *",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "dir *",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "pwd",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git status *",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git diff *",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git log *",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git push *",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "docker *",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "format *",
+      "effect": "deny"
+    },
+    {
+      "action": "webfetch",
+      "resource": "*",
+      "effect": "ask"
+    },
+    {
+      "action": "websearch",
+      "resource": "*",
+      "effect": "ask"
+    },
+    {
+      "action": "skill",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "reverse-web",
+      "effect": "allow"
+    },
+    {
+      "action": "skill",
+      "resource": "installer-outil",
+      "effect": "allow"
+    }
+  ],
+  "agents": {
+    "build": {
+      "description": "Dev : créer, modifier et lancer du code dans D:\\IA LOCAL\\projets",
+      "permissions": [
+        {
+          "action": "shell",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "webfetch",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "websearch",
+          "resource": "*",
+          "effect": "allow"
+        }
+      ]
+    },
+    "reverse-web": {
+      "description": "Reverse engineering de sites web avec REA et Playwright",
+      "mode": "primary",
+      "system": "Tu fais du reverse engineering de sites web. Avant d'agir, charge la skill reverse-web : elle dit quel outil REA ou Playwright utiliser pour chaque tâche. Range tout ce que tu produis dans projets\\<nom-du-site>\\."
+    },
+    "codeur": {
+      "description": "Écrit ou modifie le code pour une tâche bien délimitée, puis liste les fichiers changés.",
+      "mode": "subagent",
+      "system": "Fais la plus petite modification correcte qui répond à la demande. Respecte le style du code existant. Ne touche qu'aux fichiers nécessaires et termine par la liste des fichiers modifiés et ce qu'il faut tester."
+    },
+    "testeur": {
+      "description": "Lance les tests, les scripts et le navigateur (Playwright) pour vérifier un comportement, et rapporte ce qui passe, ce qui échoue et les erreurs de console. Ne modifie pas le code.",
+      "mode": "subagent",
+      "system": "Tu vérifies sans corriger. Joue le scénario demandé, relève précisément les résultats, les erreurs de console et les captures utiles, et dis ce qui passe et ce qui échoue. Si tu utilises Playwright, le navigateur est déjà connecté au compte de test : ne modifie jamais le profil, les réglages ni le compte, et ne te déconnecte pas.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ]
+    },
+    "equipe": {
+      "description": "Chef de projet : découpe le travail et le confie aux sous-agents analyste, codeur, debogueur et testeur, en parallèle quand c'est possible.",
+      "mode": "primary",
+      "system": "Tu diriges une équipe de 4 sous-agents : analyste (lecture seule : code, manifest, site), codeur (écrit le code), debogueur (trouve la cause d'un bug et la corrige au plus juste) et testeur (lance les tests et le navigateur, ne modifie rien). Ils démarrent sans contexte : à chaque appel, donne-leur tout ce qu'il faut savoir du projet (but, dossier, fichiers concernés, ce qui a déjà été essayé) et adapte tes consignes au type de projet. Lance en arrière-plan et en parallèle les tâches indépendantes (par exemple analyste et testeur). Vérifie toujours ce qu'ils rendent avant de conclure, et fais le cycle analyser, coder, tester, déboguer jusqu'à ce que ça marche. Si tu utilises Playwright, le navigateur est déjà connecté au compte de test : ne modifie jamais le profil, les réglages ni le compte, et ne te déconnecte pas.",
+      "permissions": [
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "subagent",
+          "resource": "analyste",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "codeur",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "debogueur",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "testeur",
+          "effect": "allow"
+        }
+      ]
+    },
+    "analyste": {
+      "description": "Analyse en lecture seule : lit le code, la configuration (manifest…) et le site cible, et répond précisément avec fichiers, lignes et sélecteurs. Ne modifie rien.",
+      "mode": "subagent",
+      "system": "Tu analyses sans rien modifier. Réponds à la question posée de façon concise et vérifiable : chemins de fichiers, numéros de ligne, sélecteurs, requêtes réseau observées. Si tu utilises Playwright, le navigateur est déjà connecté au compte de test : ne modifie jamais le profil, les réglages ni le compte, et ne te déconnecte pas.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "ls *",
+          "effect": "allow"
+        },
+        {
+          "action": "shell",
+          "resource": "dir *",
+          "effect": "allow"
+        },
+        {
+          "action": "shell",
+          "resource": "pwd",
+          "effect": "allow"
+        },
+        {
+          "action": "shell",
+          "resource": "git status *",
+          "effect": "allow"
+        },
+        {
+          "action": "shell",
+          "resource": "git diff *",
+          "effect": "allow"
+        },
+        {
+          "action": "shell",
+          "resource": "git log *",
+          "effect": "allow"
+        }
+      ]
+    },
+    "debogueur": {
+      "description": "À partir d'une erreur, de logs ou d'un comportement anormal, trouve la cause réelle, la corrige au plus juste et explique pourquoi.",
+      "mode": "subagent",
+      "system": "Reproduis ou localise d'abord le problème, puis identifie la cause réelle avant de corriger. Fais la correction minimale, sans réécrire ce qui marche. Explique la cause, la correction et comment vérifier. Si tu utilises Playwright, le navigateur est déjà connecté au compte de test : ne modifie jamais le profil, les réglages ni le compte, et ne te déconnecte pas."
+    }
+  },
+  "policies": [
+    {
+      "action": "provider.use",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "provider.use",
+      "resource": "ia-locale",
+      "effect": "allow"
+    },
+    {
+      "action": "provider.use",
+      "resource": "runpod",
+      "effect": "allow"
+    }
+  ]
+}

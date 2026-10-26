@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wiki OpenCode</title>
+<style>
+:root{--fond:#f4f5f8;--carte:#fff;--texte:#1b2130;--doux:#5a6375;--bord:#e0e3ea;--acc:#5b4bdb;--acc-f:#eeebff;--ok:#1d8a4b;--ok-f:#e4f5eb;--att:#b06400;--att-f:#fff2dc;--non:#c0392b;--non-f:#fdeceb;--code:#eef1f6;--kbd:#fbfbfd;--kbd-b:#c9cdd8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fond:#10131a;--carte:#191d26;--texte:#e4e7ee;--doux:#97a0b2;--bord:#2a303c;--acc:#a99fff;--acc-f:#25213e;--ok:#5fd394;--ok-f:#15281e;--att:#ffb44d;--att-f:#2c2314;--non:#ff8a80;--non-f:#321a19;--code:#232935;--kbd:#262c38;--kbd-b:#3b4252}}
+:root[data-theme="dark"]{--fond:#10131a;--carte:#191d26;--texte:#e4e7ee;--doux:#97a0b2;--bord:#2a303c;--acc:#a99fff;--acc-f:#25213e;--ok:#5fd394;--ok-f:#15281e;--att:#ffb44d;--att-f:#2c2314;--non:#ff8a80;--non-f:#321a19;--code:#232935;--kbd:#262c38;--kbd-b:#3b4252}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);font:15px/1.6 system-ui,"Segoe UI",sans-serif}
+main{max-width:1060px;margin:0 auto;padding:28px 16px 70px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+h1{font-size:27px;margin:0}
+h2{font-size:19px;margin:26px 0 10px}
+.sous{color:var(--doux);margin:4px 0 20px}
+.theme{background:var(--carte);border:1px solid var(--bord);color:var(--texte);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit}
+.onglets{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--bord);margin-bottom:18px;position:sticky;top:66px;background:var(--fond);z-index:2;padding-top:6px}
+.onglets button{background:none;border:0;border-bottom:3px solid transparent;color:var(--doux);padding:9px 12px;font:inherit;font-weight:600;cursor:pointer}
+.onglets button.actif{color:var(--acc);border-color:var(--acc)}
+section{display:none}section.actif{display:block}
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.carte h3{margin:0 0 8px;font-size:16px}
+.grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:14px}
+.tableau{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bord);vertical-align:top}
+th{color:var(--doux);font-weight:600;font-size:13px;white-space:nowrap}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:13px Consolas,monospace;word-break:break-word}
+kbd{display:inline-block;background:var(--kbd);border:1px solid var(--kbd-b);border-bottom-width:2px;border-radius:5px;padding:0 6px;font:12.5px Consolas,monospace;white-space:nowrap;line-height:1.7}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:1px 9px;border-radius:99px;white-space:nowrap}
+.ok{background:var(--ok-f);color:var(--ok)}.att{background:var(--att-f);color:var(--att)}.non{background:var(--non-f);color:var(--non)}.info{background:var(--acc-f);color:var(--acc)}
+.note{background:var(--att-f);border:1px solid var(--bord);border-radius:10px;padding:10px 14px;margin:10px 0}
+.astuce{background:var(--acc-f);border:1px solid var(--bord);border-radius:10px;padding:10px 14px;margin:10px 0}
+.danger{background:var(--non-f);border:1px solid var(--bord);border-radius:10px;padding:10px 14px;margin:10px 0}
+.recherche{width:100%;padding:10px 12px;border:1px solid var(--bord);border-radius:10px;background:var(--carte);color:var(--texte);font:inherit;margin-bottom:12px}
+.ecran{white-space:pre;font:13px/1.5 Consolas,monospace;background:#0d1017;color:#cfd6e4;border-radius:12px;padding:14px;overflow-x:auto;border:1px solid var(--bord)}
+.ecran .z{color:#a99fff;font-weight:700}.ecran .g{color:#7d8799}
+.etapes{counter-reset:e;list-style:none;padding:0;margin:0}
+.etapes li{counter-increment:e;position:relative;padding:9px 0 9px 44px;border-bottom:1px solid var(--bord)}
+.etapes li:last-child{border-bottom:0}
+.etapes li::before{content:counter(e);position:absolute;left:0;top:8px;width:30px;height:30px;border-radius:50%;background:var(--acc-f);color:var(--acc);font-weight:800;display:grid;place-items:center}
+.cat{font-size:12px;color:var(--doux)}
+tr.cache{display:none}
+.id{font:11.5px Consolas,monospace;color:var(--doux)}
+mark{background:#ffd54a;color:#1b2130;border-radius:3px;padding:0 1px}
+.barre-recherche{position:sticky;top:0;z-index:3;background:var(--fond);padding:8px 0 4px}
+.barre-recherche input{width:100%;padding:12px 14px;border:2px solid var(--acc);border-radius:12px;background:var(--carte);color:var(--texte);font:inherit;font-size:16px}
+.compteur{color:var(--doux);font-size:13px;margin:6px 2px 0;min-height:18px}
+.titre-recherche{display:none;font-size:18px;margin:22px 0 8px;color:var(--acc)}
+body.cherche .onglets{display:none}
+body.cherche section{display:block}
+body.cherche section.vide{display:none}
+body.cherche .titre-recherche{display:block}
+body.cherche section > p{display:none}
+.masque{display:none!important}
+
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <h1>📘 Wiki OpenCode</h1>
+    <p class="sous">Tout ce que tu peux faire dans l'interface d'OpenCode <b>2.0.29</b>, expliqué en français (les termes de l'interface restent en anglais).<br>Sources : doc officielle opencode.ai/v2 + commandes lues dans le programme installé, le 15/10/2026.</p>
+  </div>
+  <button class="theme" id="theme" type="button">🌓 Thème</button>
+</header>
+
+<div class="barre-recherche">
+  <input id="recherche" type="search" autocomplete="off" placeholder="🔎 Rechercher dans tout le wiki : « transcript », « copier », « onglet », « ctrl+x », « permission »…  (raccourci : /)">
+  <div class="compteur" id="compteur"></div>
+</div>
+<nav class="onglets">
+  <button class="actif" data-o="bases">Les bases</button>
+  <button data-o="raccourcis">Raccourcis</button>
+  <button data-o="slash">Commandes /</button>
+  <button data-o="palette">Palette Ctrl+P</button>
+  <button data-o="sessions">Sessions</button>
+  <button data-o="settings">Settings</button>
+  <button data-o="reference">Référence complète</button>
+  <button data-o="pieges">Pièges & conseils</button>
+</nav>
+
+<!-- ============================ BASES ============================ -->
+<section id="bases" class="actif">
+  <div class="carte">
+    <h3>L'écran d'OpenCode</h3>
+<div class="ecran"><span class="g">┌ onglets de sessions ──────────────────────────────────────────┐</span>
+<span class="z">①</span> Check site web avec authentification  +
+<span class="g">├ conversation ─────────────────────────────┬ sidebar ───────────┤</span>
+<span class="z">②</span>  toi : analyse play-bubble…               │ <span class="z">④</span> Context 24 934 tokens
+    + Thought · 58.0s                         │   25% used
+    → Explored: 2 searches                    │   MCP
+    l'agent : J'ai trouvé…                    │   • perplexity  Connected
+                                              │   • playwright  Connected
+<span class="g">├ prompt ───────────────────────────────────┤</span>   • rea         Connected
+<span class="z">③</span>  ▌ (tu écris ici)                         │
+    Build · Qwen3.8-27B (agent, réflexion)    │   D:\IA LOCAL
+<span class="g">└ esc interrupt          24.9K (25%)  ctrl+p commands ────────────┘</span></div>
+    <div class="tableau"><table>
+      <tr><th>Zone</th><th>Ce que c'est</th></tr>
+      <tr><td><b>① Tabs</b></td><td>Une conversation (« session ») par onglet. <kbd>Ctrl</kbd>+<kbd>Tab</kbd> pour passer de l'une à l'autre.</td></tr>
+      <tr><td><b>② Conversation</b></td><td>Tes messages, la réflexion du modèle (<i>Thought</i>), ses actions (<i>Explored</i>, <i>Read</i>, <i>Write</i>, <i>execute</i>…) et ses réponses.</td></tr>
+      <tr><td><b>③ Prompt</b></td><td>Là où tu écris. En dessous : le <b>profil</b> (<i>agent</i> : Build) et le <b>modèle</b> utilisés.</td></tr>
+      <tr><td><b>④ Sidebar</b></td><td><b>Context</b> = mémoire de travail utilisée (25 % = il reste de la place) ; <b>MCP</b> = outils branchés. <kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>B</kbd> pour l'afficher/masquer.</td></tr>
+      <tr><td><b>Barre du bas</b></td><td><kbd>esc</kbd> interrompt l'agent, <kbd>ctrl+p</kbd> ouvre la palette de commandes.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="grille">
+    <div class="carte"><h3>✍️ Écrire</h3><kbd>Enter</kbd> envoie.<br><kbd>Shift</kbd>+<kbd>Enter</kbd> ou <kbd>Ctrl</kbd>+<kbd>J</kbd> = retour à la ligne.<br>Flèche <kbd>↑</kbd> = rappeler tes messages précédents.</div>
+    <div class="carte"><h3>📎 <code>@</code> = joindre un fichier</h3>Tape <code>@</code> puis le nom : <code>@projets/play-bubble/LISEZ-MOI.md</code>.<br>Une partie seulement : <code>@fichier.py#20-45</code> (lignes 20 à 45).</div>
+    <div class="carte"><h3>💻 <code>!</code> = commande directe</h3>Au début d'un prompt vide : <code>!dir projets</code>. La commande part <b>tout de suite</b> (c'est toi qui la tapes), et son résultat reste dans la conversation. <kbd>Esc</kbd> pour sortir de ce mode.</div>
+    <div class="carte"><h3>⏹️ Interrompre</h3><kbd>Esc</kbd> arrête l'agent en cours de route. Pendant qu'il travaille, <kbd>Enter</kbd> lui envoie une <b>correction</b> immédiate ; <kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>Enter</kbd> la met <b>en file d'attente</b> pour après.</div>
+    <div class="carte"><h3>🔀 Changer de profil</h3><kbd>Shift</kbd>+<kbd>Tab</kbd> passe au profil suivant : <code>Build</code> → <code>Plan</code> → <code>reverse-web</code>…<br>(<kbd>Tab</kbd> tout seul ne fait rien ici.)</div>
+    <div class="carte"><h3>❓ Question rapide</h3><code>/btw pourquoi le test a échoué ?</code> : il répond dans une fenêtre <b>sans l'ajouter</b> à la conversation (ça ne pollue pas sa mémoire).</div>
+  </div>
+
+  <div class="carte">
+    <h3>Les profils (agents)</h3>
+    <div class="tableau"><table>
+      <tr><th>Profil</th><th>Ce qu'il fait</th><th>Quand l'utiliser</th></tr>
+      <tr><td><code>Build</code> (défaut)</td><td>Tout : lit, écrit, lance des commandes, REA, Playwright, Perplexity</td><td>99 % du temps</td></tr>
+      <tr><td><code>Plan</code></td><td>Réfléchit et propose un plan <b>sans modifier tes fichiers</b></td><td>Avant une grosse mission, pour valider le plan d'abord</td></tr>
+      <tr><td><code>reverse-web</code></td><td>Comme Build, avec une consigne qui le pousse à charger la fiche <i>reverse-web</i></td><td>Analyse de site (optionnel, Build sait le faire)</td></tr>
+      <tr><td><code>explore</code>, <code>general</code></td><td>« Sous-agents » que Build lance tout seul pour chercher ou faire une sous-tâche</td><td>Tu n'as rien à faire</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- ============================ RACCOURCIS ============================ -->
+<section id="raccourcis">
+  <div class="astuce"><b>La touche « leader » = <kbd>Ctrl</kbd>+<kbd>X</kbd>.</b> Beaucoup de raccourcis se font en <b>deux temps</b> : appuie sur <kbd>Ctrl</kbd>+<kbd>X</kbd>, relâche, puis la lettre. Ex. <kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>N</kbd> = nouvelle session.<br>
+  Perdu ? <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>K</kbd> affiche le panneau <b>which-key</b> avec tous les raccourcis disponibles.</div>
+
+  <div class="grille">
+    <div class="carte"><h3>Les 10 à retenir</h3>
+      <table>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>Palette de toutes les commandes</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Interrompre l'agent</td></tr>
+        <tr><td><kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Profil suivant</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>N</kbd></td><td>Nouvelle session</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>L</kbd></td><td>Liste des sessions</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>M</kbd></td><td>Choisir le modèle</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>U</kbd></td><td>Annuler le dernier message (et ce qu'il a fait)</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>C</kbd></td><td>Compacter (résumer) la conversation</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>Y</kbd></td><td>Copier le dernier message</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>Vider le prompt ; 2 fois = quitter</td></tr>
+      </table>
+    </div>
+    <div class="carte"><h3>Sessions & onglets</h3>
+      <table>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Sessions et projets récents</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>Tab</kbd></td><td>Onglet suivant (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Tab</kbd> = précédent)</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>1</kbd>…<kbd>9</kbd></td><td>Aller à l'onglet n°1…9</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>W</kbd></td><td>Fermer l'onglet</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd></td><td>Rouvrir l'onglet fermé</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>Renommer la session</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>G</kbd></td><td>Timeline : sauter à un message</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>X</kbd></td><td>Exporter la session</td></tr>
+      </table>
+    </div>
+    <div class="carte"><h3>Modèle & affichage</h3>
+      <table>
+        <tr><td><kbd>F2</kbd></td><td>Modèle récent suivant (agent ↔ code)</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>A</kbd></td><td>Choisir le profil (agent)</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>B</kbd></td><td>Afficher/masquer la sidebar</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>T</kbd></td><td>Panneau terminal</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>S</kbd></td><td>Statut (moteur, MCP…)</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>R</kbd></td><td>Refaire (après un Undo)</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>I</kbd></td><td>Voir les images jointes</td></tr>
+        <tr><td><kbd>PgUp</kbd> / <kbd>PgDn</kbd></td><td>Défiler la conversation</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="note">Les raccourcis se changent dans <code>D:\IA LOCAL\config\opencode\cli.json</code> (section <code>keybinds</code>). Liste complète : opencode.ai/v2/docs/cli/keybinds.</div>
+</section>
+
+<!-- ============================ SLASH ============================ -->
+<section id="slash">
+  <p>Tape <code>/</code> dans le prompt : la liste s'ouvre, continue à taper pour filtrer, <kbd>Enter</kbd> pour lancer. Les 38 commandes de ta version :</p>
+    <div class="carte tableau"><table id="tslash">
+    <tr><th>Commande</th><th>Nom anglais</th><th>À quoi ça sert</th><th>Pour toi</th></tr>
+    <tr><td colspan="4" class="cat">— Conversation (session) —</td></tr>
+    <tr><td><code>/new</code></td><td>New session</td><td>Nouvelle conversation vierge (raccourci <kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>N</kbd>)</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/sessions</code> <span class="cat">(= /resume, /continue)</span></td><td>Switch session</td><td>Liste de tes conversations pour en reprendre une</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/open</code> <span class="cat">(= /projects)</span></td><td>Open session or project</td><td>Sessions et dossiers récents</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/rename</code> <i>titre</i></td><td>Rename session</td><td>Donner un nom clair à la conversation (ex. <code>/rename Play-bubble : API</code>)</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/clear</code></td><td>Clear session</td><td>Vider la conversation en cours pour repartir de zéro</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/compact</code></td><td>Compact session</td><td>Résume la conversation pour libérer de la mémoire (quand <i>Context</i> dépasse ~70 %)</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/undo</code></td><td>Undo previous message</td><td>Annule ton dernier message <b>et les modifications de fichiers</b> qui ont suivi ; ton texte revient dans le prompt pour le corriger</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/redo</code></td><td>Redo</td><td>Rétablit ce que /undo a annulé</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/fork</code></td><td>Fork session</td><td>Copie la conversation à partir d'un message pour tester une autre piste sans perdre l'originale</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/timeline</code></td><td>Jump to message</td><td>Sauter directement à un ancien message</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/copy</code></td><td>Copy session transcript</td><td>Copie toute la conversation dans le presse-papiers</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/export</code></td><td>Export session transcript</td><td>Exporte la conversation (ouvre l'éditeur / un fichier)</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/btw</code> <i>question</i></td><td>Ask a side question</td><td>Question rapide hors conversation (n'encombre pas sa mémoire)</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/share</code></td><td>Share session</td><td>Partage en ligne — <b>pas encore actif</b> dans cette version</td><td><span class="badge non">inutile</span></td></tr>
+    <tr><td><code>/cd</code> <i>dossier</i></td><td>Change working directory</td><td>Change le dossier de travail</td><td><span class="badge att">attention</span> reste dans <code>D:\IA LOCAL</code></td></tr>
+    <tr><td><code>/worktrees</code></td><td>Manage workspaces</td><td>Gère des copies de travail Git (<i>worktrees</i>)</td><td><span class="badge non">inutile</span> (pas de Git ici)</td></tr>
+    <tr><td colspan="4" class="cat">— Modèle et profil (agent) —</td></tr>
+    <tr><td><code>/models</code></td><td>Switch model</td><td>Choisir le modèle (<kbd>Ctrl</kbd>+<kbd>A</kbd> dans la liste = par fournisseur, <kbd>Ctrl</kbd>+<kbd>F</kbd> = favori)</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/agents</code></td><td>Switch agent</td><td>Choisir le profil : Build, Plan, reverse-web</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/variants</code> <span class="cat">(= /thinking, /effort)</span></td><td>Switch model variant</td><td>Niveau de réflexion d'un modèle, quand il en propose (pas défini pour tes modèles locaux)</td><td><span class="badge non">inutile</span></td></tr>
+    <tr><td><code>/mcps</code></td><td>MCP servers</td><td>Voir REA / Playwright / Perplexity, les connecter ou déconnecter (<kbd>Space</kbd>)</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/skills</code></td><td>Skills</td><td>Voir et choisir une fiche (reverse-web, installer-outil) à joindre au prompt</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/connect</code></td><td>Connect an integration</td><td>Brancher un fournisseur <b>en ligne</b> (OpenAI, Anthropic…)</td><td><span class="badge non">bloqué</span> (100 % local)</td></tr>
+    <tr><td colspan="4" class="cat">— Outils et affichage —</td></tr>
+    <tr><td><code>/terminal</code></td><td>New terminal</td><td>Ouvre un panneau de terminal dans OpenCode</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/editor</code></td><td>Open editor</td><td>Écrire ton prompt dans un éditeur externe (variable <code>EDITOR</code> requise)</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/diff</code></td><td>Open diff viewer</td><td>Voir les modifications de fichiers (surtout avec Git)</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/themes</code></td><td>Switch theme</td><td>Changer les couleurs (aperçu en direct)</td><td><span class="badge ok">sympa</span></td></tr>
+    <tr><td><code>/settings</code></td><td>Open settings</td><td>Réglages de l'interface (voir l'onglet <i>Settings</i>)</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/status</code></td><td>View status</td><td>État : serveur, MCP, modèle, chemins</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/stats</code></td><td>Usage statistics</td><td>Statistiques d'utilisation (tokens, modèles)</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/help</code></td><td>Help</td><td>Aide rapide</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/highlights</code></td><td>Show release highlights</td><td>Nouveautés de la version</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/plugins</code></td><td>Plugins</td><td>Gérer les extensions de l'interface</td><td><span class="badge att">attention</span> code tiers</td></tr>
+    <tr><td colspan="4" class="cat">— Programme —</td></tr>
+    <tr><td><code>/reload</code></td><td>Reload configuration</td><td>Relit <code>opencode.json</code> sans quitter (après une modif de config)</td><td><span class="badge ok">utile</span></td></tr>
+    <tr><td><code>/restart</code></td><td>Restart service</td><td>Redémarre le serveur partagé (tu utilises un serveur privé : rarement utile)</td><td><span class="badge non">inutile</span></td></tr>
+    <tr><td><code>/update</code></td><td>Update OpenCode</td><td>Met OpenCode à jour</td><td><span class="badge att">attention</span> demande à Claude</td></tr>
+    <tr><td><code>/pair</code> <span class="cat">(= /web)</span></td><td>Pair device</td><td>Liens pour piloter OpenCode depuis un navigateur ou le téléphone. Demande le serveur partagé (pas ton lanceur)</td><td><span class="badge att">attention</span></td></tr>
+    <tr><td><code>/debug</code></td><td>View debug info</td><td>Infos techniques de dépannage</td><td><span class="badge info">parfois</span></td></tr>
+    <tr><td><code>/exit</code> <span class="cat">(= /quit, /q)</span></td><td>Exit the app</td><td>Quitter OpenCode</td><td><span class="badge ok">utile</span></td></tr>
+  </table></div>
+</section>
+
+<!-- ============================ PALETTE ============================ -->
+<section id="palette">
+  <div class="carte">
+    <h3>À quoi sert <kbd>Ctrl</kbd>+<kbd>P</kbd> ?</h3>
+    <p>C'est la <b>command palette</b> (fenêtre « Commands ») : la liste de <b>toutes</b> les actions possibles là où tu es, rangées par groupes. Tape dans <b>Search</b> pour filtrer, <kbd>↑</kbd><kbd>↓</kbd> pour choisir, <kbd>Entrée</kbd> pour lancer, <kbd>Esc</kbd> pour fermer. À droite : le raccourci clavier quand il existe (<code>ctrl+x l</code> = <kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>L</kbd>).</p>
+    <p class="sous">Chaque action est expliquée en détail dans l'onglet <b>Référence complète</b>.</p>
+  </div>
+  <div class="carte tableau">
+    <h3>Les groupes, dans l'ordre où tu les vois</h3>
+    <table>
+      <tr><th>Groupe</th><th>Ce qu'il contient (noms exacts)</th><th>En clair</th></tr>
+      <tr><td><b>Suggested</b></td><td>Switch session · New session · Switch model · Connect an integration · Open settings · Share session</td><td>Les raccourcis les plus courants, repris en haut pour aller vite</td></tr>
+      <tr><td><b>Prompt</b></td><td>Queue prompt · Skills · Stash prompt · Stash pop · Stash list · View image attachments · Remove editor context · Clear prompt · Paste · Submit prompt · View queued prompts</td><td>Ta zone de saisie. <b>Queue prompt</b> = envoyer après la fin de l'action en cours ; <b>Stash</b> = mettre un brouillon de côté (<i>pop</i> = le récupérer)</td></tr>
+      <tr><td><b>Session</b></td><td>Open editor · Manage workspaces · Switch session · New session · Clear session · Open session or project · Close tab · Reopen closed tab · Share session · Rename session · Jump to message · Fork session · Compact session · Undo previous message · Redo · <b>Verbosity: Medium</b> · Copy last assistant message · Copy session transcript · Export session transcript · Copy session ID · Change working directory · New terminal · Ask a side question · Background blocking tools · Interrupt session · Next/Previous message · Toggle thinking, sidebar, scrollbar…</td><td>Tout ce qui concerne la conversation et les onglets. <b>Verbosity: Medium</b> change le niveau de détail affiché (Low / Medium / High) à chaque appui</td></tr>
+      <tr><td><b>Agent</b></td><td>Switch model · Switch agent · Switch model variant · MCP servers · Model cycle · Agent cycle · Favorite cycle · Variant cycle (+ reverse)</td><td>Modèle, profil (Build / Plan / reverse-web), outils MCP</td></tr>
+      <tr><td><b>Integration</b></td><td>Connect an integration</td><td>Fournisseurs en ligne : <span class="badge non">bloqué</span> chez toi (100 % local)</td></tr>
+      <tr><td><b>System</b></td><td>Open settings · View status · View debug info · Switch theme · Reload configuration · Restart service · Update OpenCode · Show release highlights · Pair device · Open docs · Help · Toggle console · Toggle debug panel · Suspend terminal · Exit the app</td><td>Réglages et entretien du programme</td></tr>
+    </table>
+    <div class="astuce">La palette s'adapte : dans une liste (sessions, modèles…) ou dans la visionneuse de diff, d'autres actions apparaissent. <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>K</kbd> (which-key) montre les raccourcis valables à l'endroit où tu es.</div>
+  </div>
+</section>
+
+<!-- ============================ SESSIONS ============================ -->
+<section id="sessions">
+  <div class="carte">
+    <h3>Une session = une conversation</h3>
+    <p>Chaque session garde son historique, ses fichiers touchés et sa mémoire. Elles sont enregistrées dans <code>D:\IA LOCAL\.donnees\</code> (rien n'est perdu quand tu quittes).</p>
+    <ol class="etapes">
+      <li><b>Nouvelle conversation</b> : <kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>N</kbd>, <code>/new</code>, ou relancer <code>Lancer l'agent.cmd</code> et taper <kbd>N</kbd> dans le menu.</li>
+      <li><b>Lui donner un nom clair tout de suite</b> : <kbd>Ctrl</kbd>+<kbd>R</kbd> ou <code>/rename Play-bubble : analyse API</code>. Sinon un titre est généré automatiquement.</li>
+      <li><b>Retrouver une ancienne conversation</b> : <kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>L</kbd> ou <code>/sessions</code> → la liste avec titres. Dans cette liste : <kbd>Ctrl</kbd>+<kbd>F</kbd> = épingler en haut, <kbd>Ctrl</kbd>+<kbd>D</kbd> = supprimer.</li>
+      <li><b>Plusieurs à la fois</b> : chaque session ouverte a son <b>onglet</b> en haut ; <kbd>Ctrl</kbd>+<kbd>Tab</kbd> ou <kbd>Ctrl</kbd>+<kbd>1</kbd>…<kbd>9</kbd> pour passer de l'une à l'autre.</li>
+      <li><b>Reprendre en démarrant</b> : <code>Lancer l'agent.cmd</code> affiche le menu de tes conversations (titre + « il y a … ») : <kbd>Entrée</kbd> = la dernière, un <b>numéro</b> = celle-là, <kbd>N</kbd> = nouvelle, <kbd>Q</kbd> = quitter.</li>
+    </ol>
+  </div>
+  <div class="carte">
+    <h3>Exemple de noms qui aident à s'y retrouver</h3>
+    <div class="tableau"><table>
+      <tr><th>Au lieu de</th><th>Écris</th></tr>
+      <tr><td>« Check site web avec authentification REA »</td><td><code>Play-bubble · 1 · structure et API</code></td></tr>
+      <tr><td>« Python script help »</td><td><code>Outil HAR · script endpoints</code></td></tr>
+      <tr><td>« New session »</td><td><code>Test · essai rapide (à supprimer)</code></td></tr>
+    </table></div>
+    <p class="sous">Format conseillé : <b>Projet · étape · sujet</b>. Le même nom de projet que le dossier <code>projets\&lt;nom&gt;\</code>.</p>
+  </div>
+  <div class="carte">
+    <h3>Mémoire pleine ? (<i>Context</i> dans la sidebar)</h3>
+    <p>Le modèle a 96 k tokens de mémoire. Au-delà de ~80 %, OpenCode <b>résume automatiquement</b> le début (<i>compaction</i>). Tu peux le faire toi-même avant avec <code>/compact</code>, ou mieux : <b>nouvelle session</b> pour une nouvelle étape, en lui disant de relire le <code>LISEZ-MOI.md</code> du projet.</p>
+  </div>
+</section>
+
+<!-- ============================ SETTINGS ============================ -->
+<section id="settings">
+<div class="carte"><h3>Ouvrir les réglages</h3><p><kbd>Ctrl</kbd>+<kbd>P</kbd> → <b>Open settings</b> (ou <code>/settings</code>). Choisis une ligne avec <kbd>↑</kbd><kbd>↓</kbd>, change la valeur avec <kbd>←</kbd><kbd>→</kbd> ou <kbd>Entrée</kbd>. C'est enregistré tout de suite dans <code>D:\IA LOCAL\config\opencode\cli.json</code>.</p><div class="tableau"><table><tr><th>Fichier</th><th>Contient</th><th>Qui le modifie</th></tr><tr><td><code>cli.json</code></td><td>L'<b>interface</b> : les 35 réglages ci-dessous + raccourcis</td><td>Toi, via Open settings</td></tr><tr><td><code>opencode.json</code></td><td>Le <b>cerveau</b> : modèles, MCP, permissions des outils, profils</td><td>Claude (ou toi avec précaution), puis <code>/reload</code>. <b>Pas de commentaires dedans.</b></td></tr></table></div></div>
+<div class="carte tableau"><h3>Appearance (apparence)</h3><table><tr><th>Réglage (OpenCode)</th><th>Valeurs</th><th>Par défaut</th><th>En clair</th></tr>
+<tr data-k="theme.name color scheme,colors couleurs"><td><b>Theme</b><br><span class="id">theme.name</span></td><td>nombre</td><td><code>opencode</code></td><td>Thème de couleurs de l&#x27;interface. Plus simple : /themes (aperçu en direct).</td></tr>
+<tr data-k="theme.mode dark mode,light mode,system theme clair sombre dark light"><td><b>Color mode</b><br><span class="id">theme.mode</span></td><td>system / dark / light</td><td><code>system</code></td><td>Clair ou sombre. « system » suit le réglage du terminal.</td></tr>
+<tr data-k="animations motion,effects animation mouvement"><td><b>Animations</b><br><span class="id">animations</span></td><td>off / on</td><td><code>off</code></td><td>Animations de l&#x27;interface (indicateurs qui bougent, transitions).</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Session (conversation)</h3><table><tr><th>Réglage (OpenCode)</th><th>Valeurs</th><th>Par défaut</th><th>En clair</th></tr>
+<tr data-k="session.sidebar side panel panneau droite barre latérale"><td><b>Sidebar</b><br><span class="id">session.sidebar</span></td><td>hide / auto</td><td><code>auto</code></td><td>Panneau de droite (Context, MCP, dossier). « auto » = affiché s&#x27;il y a la place, « hide » = jamais.</td></tr>
+<tr data-k="session.scrollbar scroll bar défilement ascenseur"><td><b>Scrollbar</b><br><span class="id">session.scrollbar</span></td><td>off / on</td><td><code>off</code></td><td>Barre de défilement à droite de la conversation.</td></tr>
+<tr data-k="session.thinking reasoning,chain of thought réflexion pensée raisonnement"><td><b>Thinking</b><br><span class="id">session.thinking</span></td><td>hide / show</td><td><code>hide</code></td><td>Réflexion du modèle (« + Thought ») dépliée (show) ou repliée (hide).</td></tr>
+<tr data-k="session.markdown syntax,concealment,rendering mise en forme formatage"><td><b>Markdown</b><br><span class="id">session.markdown</span></td><td>source / rendered</td><td><code>rendered</code></td><td>« rendered » = texte mis en forme (gras, titres, tableaux) ; « source » = symboles ** et # visibles.</td></tr>
+<tr data-k="session.grouping transcript,messages,reads,searches regrouper actions outils"><td><b>Tool grouping</b><br><span class="id">session.grouping</span></td><td>none / auto</td><td><code>auto</code></td><td>Regroupe les actions liées en une ligne (« Explored: 2 searches ») ; « none » = une ligne par action.</td></tr>
+<tr data-k="session.verbosity detail,activity,summary,transcript détail verbosité activité"><td><b>Verbosity</b><br><span class="id">session.verbosity</span></td><td>low / medium / high</td><td><code>medium</code></td><td>Niveau de détail affiché pour l&#x27;activité de l&#x27;agent : low (résumé), medium, high (tout le détail). Absent de la doc officielle.</td></tr>
+<tr data-k="session.image_preview attachments,images,tool output images captures screenshot pièces jointes"><td><b>Transcript images</b><br><span class="id">session.image_preview</span></td><td>off / on</td><td><code>off</code></td><td>Affiche les images DANS la conversation : celles que tu joins et celles renvoyées par les outils (captures d&#x27;écran Playwright ou REA…). Pratique en reverse web, si ton terminal sait afficher les images.</td></tr>
+<tr data-k="session.tps tokens per second,throughput vitesse tokens par seconde"><td><b>TPS</b><br><span class="id">session.tps</span></td><td>off / on</td><td><code>on</code></td><td>Vitesse sous chaque réponse en tokens par seconde : c&#x27;est le « 32.1 tok/s » en bas des réponses.</td></tr>
+<tr data-k="session.new_location directory,cwd,inherit dossier répertoire nouvelle session"><td><b>New session location</b><br><span class="id">session.new_location</span></td><td>launch directory / active session</td><td><code>launch</code></td><td>Où démarre une nouvelle session : « launch directory » = D:\IA LOCAL (dossier de lancement) ; « active session » = dossier de la session ouverte (si tu as fait /cd).</td></tr>
+<tr data-k="session.permissions approve,accept,permission requests autorisation always allow accepter auto accept permission"><td><b>Permissions</b> <span class="badge att">voir ⚠️</span><br><span class="id">session.permissions</span></td><td>prompt / auto accept</td><td><code>prompt</code></td><td>« prompt » = il te demande avant les commandes ; « auto accept » = il accepte tout seul (comme « Always allow » à chaque fois). Les interdictions (git push, docker, format, hors D:\IA LOCAL, ses réglages) restent bloquées. Une suppression de fichier dans D:\IA LOCAL passerait sans te demander.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Tabs (onglets)</h3><table><tr><th>Réglage (OpenCode)</th><th>Valeurs</th><th>Par défaut</th><th>En clair</th></tr>
+<tr data-k="tabs.mode onglets"><td><b>Mode</b><br><span class="id">tabs.mode</span></td><td>off / on / auto</td><td><code>auto</code></td><td>Bande d&#x27;onglets de sessions en haut : auto, toujours (on) ou jamais (off).</td></tr>
+<tr data-k="tabs.scope onglets portée"><td><b>Scope</b><br><span class="id">tabs.scope</span></td><td>current directory / global</td><td><code>cwd</code></td><td>Onglets propres au dossier (« current directory ») ou communs à tous les dossiers (« global »).</td></tr>
+<tr data-k="tabs.layout sidebar,orientation,left onglets disposition"><td><b>Layout</b><br><span class="id">tabs.layout</span></td><td>horizontal / vertical</td><td><code>horizontal</code></td><td>Onglets en bande horizontale ou en colonne verticale.</td></tr>
+<tr data-k="tabs.indicators tab numbers,number mode,status icons onglets numéros icônes"><td><b>Indicators</b><br><span class="id">tabs.indicators</span></td><td>status icons / always show numbers</td><td><code>status</code></td><td>Sur les onglets : icônes d&#x27;état (en cours, non lu) ou toujours les numéros (pratique avec Ctrl+1…9).</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Diffs (modifications)</h3><table><tr><th>Réglage (OpenCode)</th><th>Valeurs</th><th>Par défaut</th><th>En clair</th></tr>
+<tr data-k="diffs.view diff layout,split diff,unified diff diff disposition"><td><b>Layout</b><br><span class="id">diffs.view</span></td><td>auto / split / unified</td><td><code>auto</code></td><td>Visionneuse de diff : côte à côte (split), à la suite (unified) ou selon la largeur (auto).</td></tr>
+<tr data-k="diffs.wrap diff wrap,word wrap,line wrap diff retour à la ligne"><td><b>Wrapping</b><br><span class="id">diffs.wrap</span></td><td>none / word</td><td><code>word</code></td><td>Couper les longues lignes dans les diffs (word) ou non (none).</td></tr>
+<tr data-k="diffs.tree diff files diff arbre fichiers"><td><b>File tree</b><br><span class="id">diffs.tree</span></td><td>off / on</td><td><code>on</code></td><td>Arbre des fichiers à gauche dans la visionneuse de diff.</td></tr>
+<tr data-k="diffs.single one file,selected file diff fichier"><td><b>Single patch</b><br><span class="id">diffs.single</span></td><td>off / on</td><td><code>off</code></td><td>Un seul fichier à la fois dans la visionneuse de diff.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Input (saisie)</h3><table><tr><th>Réglage (OpenCode)</th><th>Valeurs</th><th>Par défaut</th><th>En clair</th></tr>
+<tr data-k="scroll.speed scrolling molette défilement vitesse"><td><b>Scroll speed</b><br><span class="id">scroll.speed</span></td><td>nombre</td><td><code>3</code></td><td>Vitesse de la molette (distance par cran).</td></tr>
+<tr data-k="scroll.acceleration scroll acceleration molette accélération"><td><b>Acceleration</b><br><span class="id">scroll.acceleration</span></td><td>off / on</td><td><code>off</code></td><td>Défilement qui accélère si tu tournes vite la molette (remplace la vitesse fixe).</td></tr>
+<tr data-k="mouse mouse capture souris clic"><td><b>Mouse</b><br><span class="id">mouse</span></td><td>off / on</td><td><code>on</code></td><td>Souris active dans OpenCode (clics, molette). Si « off », la sélection de texte du terminal redevient normale.</td></tr>
+<tr data-k="prompt.editor file context,prompt context,editor selection éditeur contexte vscode"><td><b>Editor context</b><br><span class="id">prompt.editor</span></td><td>off / on</td><td><code>on</code></td><td>Joint automatiquement le fichier ou la sélection ouverts dans ton éditeur relié (ex. VS Code). Sans éditeur relié : aucun effet.</td></tr>
+<tr data-k="prompt.paste paste summary,clipboard,pasted content coller collage"><td><b>Large pastes</b><br><span class="id">prompt.paste</span></td><td>compact / full</td><td><code>compact</code></td><td>Gros collage affiché résumé (« compact », ex. [Pasted 120 lines]) ou en entier (« full »). Le contenu envoyé est le même.</td></tr>
+<tr data-k="prompt.image_preview attachments,clipboard,images,prompt images aperçu pièces jointes"><td><b>Image previews</b><br><span class="id">prompt.image_preview</span></td><td>off / on</td><td><code>off</code></td><td>Aperçu des images jointes au-dessus de la zone de saisie.</td></tr>
+<tr data-k="leader.timeout leader key,shortcut timeout leader délai raccourci"><td><b>Leader timeout</b><br><span class="id">leader.timeout</span></td><td>nombre</td><td><code>2000</code></td><td>Temps (en millisecondes) pour taper la 2e touche après Ctrl+X. 2000 = 2 secondes.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Alerts (alertes)</h3><table><tr><th>Réglage (OpenCode)</th><th>Valeurs</th><th>Par défaut</th><th>En clair</th></tr>
+<tr data-k="attention.notifications system notifications,desktop notifications,alerts notification alerte"><td><b>Notifications</b><br><span class="id">attention.notifications</span></td><td>off / on</td><td><code>off</code></td><td>Notification Windows quand il a fini ou attend ta permission, si la fenêtre n&#x27;est pas au premier plan.</td></tr>
+<tr data-k="attention.sound audio,sound effects,alerts son bip"><td><b>Sounds</b><br><span class="id">attention.sound</span></td><td>off / on</td><td><code>off</code></td><td>Petit son dans ces mêmes cas.</td></tr>
+<tr data-k="attention.volume sound volume,audio volume son volume"><td><b>Volume</b><br><span class="id">attention.volume</span></td><td>nombre</td><td><code>0.4</code></td><td>Volume des sons (0 à 1).</td></tr>
+<tr data-k="highlights what&#x27;s new,changelog,release notes nouveautés mise à jour"><td><b>Release highlights</b><br><span class="id">highlights</span></td><td>off / on</td><td><code>on</code></td><td>Fenêtre « nouveautés » après une mise à jour d&#x27;OpenCode.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Terminal</h3><table><tr><th>Réglage (OpenCode)</th><th>Valeurs</th><th>Par défaut</th><th>En clair</th></tr>
+<tr data-k="terminal.title terminal title,tab title titre fenêtre"><td><b>Window title</b><br><span class="id">terminal.title</span></td><td>off / on</td><td><code>on</code></td><td>Titre de la fenêtre = nom de la session (ex. « OC | Check site web avec auth »).</td></tr>
+<tr data-k="terminal.copy selection,clipboard copier presse-papiers"><td><b>Copy behavior</b><br><span class="id">terminal.copy</span></td><td>manual / select</td><td><code>manual</code></td><td>« manual » (défaut Windows) = tu sélectionnes puis tu copies ; « select » = copié dès que tu sélectionnes.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Debug</h3><table><tr><th>Réglage (OpenCode)</th><th>Valeurs</th><th>Par défaut</th><th>En clair</th></tr>
+<tr data-k="debug.devtools debug bar,developer tools debug développeur"><td><b>Developer tools</b><br><span class="id">debug.devtools</span></td><td>off / on</td><td><code>off</code></td><td>Barre d&#x27;outils de développeur (débogage de l&#x27;interface). Inutile pour toi.</td></tr>
+</table></div>
+<div class="note"><b>⚠️ Permissions → « auto accept »</b> : plus aucune question avant les commandes (pip, python, npm…), comme si tu cliquais « Always allow » à chaque fois. Ce qui est interdit reste interdit (git push, docker, format, lecture/écriture hors de <code>D:\IA LOCAL</code>, ses propres réglages). Mais une commande qui supprime des fichiers <b>dans</b> <code>D:\IA LOCAL</code> passera sans que tu la voies. Pour revenir : remettre « prompt ».</div>
+<div class="carte tableau"><h3>Réglages avancés (seulement dans le fichier <code>cli.json</code>)</h3><table><tr><th>Clé</th><th>Valeurs</th><th>En clair</th></tr>
+<tr data-k="cursor.style / cursor.blinking"><td><code>cursor.style / cursor.blinking</code></td><td>block · underline · line · default / true · false</td><td>Forme et clignotement du curseur.</td></tr>
+<tr data-k="attention.sound_pack"><td><code>attention.sound_pack</code></td><td>identifiant</td><td>Jeu de sons utilisé pour les alertes.</td></tr>
+<tr data-k="attention.sounds"><td><code>attention.sounds</code></td><td>chemins .wav</td><td>Remplacer un son précis : default, question, permission, error, done, subagent_done.</td></tr>
+<tr data-k="diffs.source"><td><code>diffs.source</code></td><td>branch · committed · working · turn</td><td>Ce que la visionneuse de diff montre au départ (« turn » = dernier tour de l&#x27;agent).</td></tr>
+<tr data-k="keybinds.*"><td><code>keybinds.*</code></td><td>touches</td><td>Changer n&#x27;importe quel raccourci, ex. &quot;model.list&quot;: &quot;&lt;leader&gt;m&quot; ; &quot;none&quot; pour en désactiver un.</td></tr>
+<tr data-k="keybinds.leader"><td><code>keybinds.leader</code></td><td>touche</td><td>Changer la touche leader (Ctrl+X par défaut).</td></tr>
+<tr data-k="plugins"><td><code>plugins</code></td><td>liste</td><td>Plugins de l&#x27;interface (activer, désactiver, ajouter).</td></tr>
+<tr data-k="debug.timing / debug.turn_tokens"><td><code>debug.timing / debug.turn_tokens</code></td><td>true · false · verbose</td><td>Diagnostics : temps d&#x27;affichage, tokens consommés par tour.</td></tr>
+<tr data-k="experimental"><td><code>experimental</code></td><td>{ id: true }</td><td>Fonctions expérimentales. Aucune n&#x27;est proposée dans ta version (2.0.29).</td></tr>
+<tr data-k="mini.*"><td><code>mini.*</code></td><td>thinking, tools, shell_output, turn_summary, footer, splash, work_spinner, mono, replay, replay_limit</td><td>Réglages de « opencode mini », l&#x27;interface minimale (pas celle que tu utilises).</td></tr>
+</table></div></section>
+
+<!-- ============================ REFERENCE ============================ -->
+<section id="reference">
+<div class="astuce">Toutes les actions d'OpenCode 2.0.29 : celles de la palette <kbd>Ctrl</kbd>+<kbd>P</kbd>, les raccourcis clavier et les actions des menus. La colonne <b>Nom</b> est le texte exact affiché par OpenCode (en anglais) ; <b>ID</b> sert à changer le raccourci dans <code>cli.json</code>. Utilise la recherche en haut de la page pour trouver une action.</div>
+<div class="carte tableau"><h3>Application <span class="cat">(20)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="leader"><td><b>Leader key for keybind combinations</b><br><span class="id">leader</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd></td><td></td><td>Touche « leader » : on l&#x27;appuie d&#x27;abord, puis une lettre (ex. Ctrl+X puis N). Elle préfixe la plupart des raccourcis.</td></tr>
+<tr data-k="app.exit"><td><b>Cancel permission rejection</b><br><span class="id">app.exit</span></td><td><kbd>Ctrl</kbd>+<kbd>C</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>D</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>Q</kbd></td><td><code>/exit</code></td><td>Quitter OpenCode (aussi /exit, /quit, /q).</td></tr>
+<tr data-k="app.debug"><td><b>Toggle debug panel</b><br><span class="id">app.debug</span></td><td><span class="cat">aucun</span></td><td></td><td>Afficher/masquer le panneau de débogage (pour développeurs).</td></tr>
+<tr data-k="app.console"><td><b>Toggle console</b><br><span class="id">app.console</span></td><td><span class="cat">aucun</span></td><td></td><td>Afficher/masquer la console interne (journaux techniques).</td></tr>
+<tr data-k="app.scrap"><td><b>Open scrap screen</b><br><span class="id">app.scrap</span></td><td><span class="cat">aucun</span></td><td></td><td>Écran « scrap » : brouillon libre, outil de développement.</td></tr>
+<tr data-k="app.toggle.animations"><td><b>Toggle animations</b><br><span class="id">app.toggle.animations</span></td><td><span class="cat">aucun</span></td><td></td><td>Activer/désactiver les animations (même chose que Settings → Animations).</td></tr>
+<tr data-k="app.toggle.file_context"><td><b>Toggle file context</b><br><span class="id">app.toggle.file_context</span></td><td><span class="cat">aucun</span></td><td></td><td>Activer/désactiver le contexte de fichier de l&#x27;éditeur relié (Settings → Editor context).</td></tr>
+<tr data-k="app.toggle.diffwrap"><td><b>Toggle diff wrapping</b><br><span class="id">app.toggle.diffwrap</span></td><td><span class="cat">aucun</span></td><td></td><td>Couper ou non les longues lignes dans les diffs (Settings → Diffs → Wrapping).</td></tr>
+<tr data-k="app.toggle.paste_summary"><td><b>Toggle paste summary</b><br><span class="id">app.toggle.paste_summary</span></td><td><span class="cat">aucun</span></td><td></td><td>Gros collages affichés en résumé ou en entier (Settings → Large pastes).</td></tr>
+<tr data-k="command.palette.show"><td><b>Open command palette</b><br><span class="id">command.palette.show</span></td><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td></td><td>Ouvrir la palette de commandes : la liste de toutes les actions disponibles.</td></tr>
+<tr data-k="help.show"><td><b>Help</b><br><span class="id">help.show</span></td><td><span class="cat">aucun</span></td><td><code>/help</code></td><td>Ouvrir l&#x27;aide (aussi /help).</td></tr>
+<tr data-k="docs.open"><td><b>Open docs</b><br><span class="id">docs.open</span></td><td><span class="cat">aucun</span></td><td></td><td>Ouvrir la documentation officielle dans le navigateur.</td></tr>
+<tr data-k="opencode.settings"><td><b>Open settings</b><br><span class="id">opencode.settings</span></td><td><span class="cat">aucun</span></td><td><code>/settings</code></td><td>Ouvrir les réglages de l&#x27;interface (aussi /settings). Voir l&#x27;onglet Settings du wiki.</td></tr>
+<tr data-k="server.pair"><td><b>Pair device</b><br><span class="id">server.pair</span></td><td><span class="cat">aucun</span></td><td><code>/pair</code></td><td>Afficher des liens pour piloter OpenCode depuis un navigateur ou le téléphone (aussi /pair, /web). Demande le service partagé, pas ton lanceur.</td></tr>
+<tr data-k="service.restart"><td><b>Restart service</b><br><span class="id">service.restart</span></td><td><span class="cat">aucun</span></td><td><code>/restart</code></td><td>Redémarrer le service OpenCode partagé (aussi /restart). Peu utile avec ton lanceur (serveur privé).</td></tr>
+<tr data-k="app.clear"><td><b>Clear screen</b><br><span class="id">app.clear</span></td><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td></td><td>Effacer l&#x27;écran (seulement dans « opencode mini », l&#x27;interface minimale).</td></tr>
+<tr data-k="opencode.highlights"><td><b>Show release highlights</b><br><span class="id">opencode.highlights</span></td><td><span class="cat">aucun</span></td><td><code>/highlights</code></td><td>Revoir les nouveautés de la version (aussi /highlights).</td></tr>
+<tr data-k="opencode.update"><td><b>Update OpenCode</b><br><span class="id">opencode.update</span></td><td><span class="cat">aucun</span></td><td><code>/update</code></td><td>Mettre OpenCode à jour (aussi /update). Demande plutôt à Claude.</td></tr>
+<tr data-k="location.reload"><td><b>Reload configuration</b><br><span class="id">location.reload</span></td><td><span class="cat">aucun</span></td><td><code>/reload</code></td><td>Relire la configuration opencode.json sans quitter (aussi /reload).</td></tr>
+<tr data-k="stats.open"><td><b>Usage statistics</b><br><span class="id">stats.open</span></td><td><span class="cat">aucun</span></td><td><code>/stats</code></td><td>Statistiques d&#x27;utilisation : tokens, modèles (aussi /stats).</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Sessions et onglets <span class="cat">(38)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="session.export"><td><b>Export session transcript</b><br><span class="id">session.export</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>X</kbd></td><td><code>/export</code></td><td>Exporter la conversation vers l&#x27;éditeur / un fichier (aussi /export).</td></tr>
+<tr data-k="session.copy"><td><b>Copy session transcript</b><br><span class="id">session.copy</span></td><td><span class="cat">aucun</span></td><td><code>/copy</code></td><td>Copier toute la conversation dans le presse-papiers (aussi /copy).</td></tr>
+<tr data-k="session.move"><td><b>Workspaces</b><br><span class="id">session.move</span></td><td><span class="cat">aucun</span></td><td><code>/worktrees</code></td><td>Déplacer la session vers une copie de travail Git (« worktree ») (aussi /worktrees).</td></tr>
+<tr data-k="session.new"><td><b>New session</b><br><span class="id">session.new</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>N</kbd></td><td><code>/new</code></td><td>Nouvelle conversation vierge (aussi /new).</td></tr>
+<tr data-k="session.list"><td><b>Switch session</b><br><span class="id">session.list</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>L</kbd></td><td><code>/sessions</code></td><td>Liste de tes conversations pour en reprendre une (aussi /sessions, /resume, /continue).</td></tr>
+<tr data-k="open.menu"><td><b>Open session or project</b><br><span class="id">open.menu</span></td><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td><code>/open</code></td><td>Sessions et dossiers récents ensemble (aussi /open, /projects).</td></tr>
+<tr data-k="session.tab.next"><td><b>Next tab</b><br><span class="id">session.tab.next</span></td><td><kbd>Ctrl</kbd>+<kbd>Tab</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>↓</kbd></td><td></td><td>Onglet de session suivant.</td></tr>
+<tr data-k="session.tab.previous"><td><b>Previous tab</b><br><span class="id">session.tab.previous</span></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Tab</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>↑</kbd></td><td></td><td>Onglet de session précédent.</td></tr>
+<tr data-k="session.tab.history.back"><td><b>Go back in session tab history</b><br><span class="id">session.tab.history.back</span></td><td><span class="cat">aucun</span></td><td></td><td>Revenir à l&#x27;onglet consulté juste avant (comme « précédent » d&#x27;un navigateur).</td></tr>
+<tr data-k="session.tab.history.forward"><td><b>Go forward in session tab history</b><br><span class="id">session.tab.history.forward</span></td><td><kbd>Ctrl</kbd>+<kbd>I</kbd></td><td></td><td>Avancer dans l&#x27;historique des onglets consultés.</td></tr>
+<tr data-k="session.tab.next_unread"><td><b>Next unread tab</b><br><span class="id">session.tab.next_unread</span></td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>↓</kbd></td><td></td><td>Onglet suivant qui a du nouveau (réponse non lue).</td></tr>
+<tr data-k="session.tab.previous_unread"><td><b>Previous unread tab</b><br><span class="id">session.tab.previous_unread</span></td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>↑</kbd></td><td></td><td>Onglet précédent qui a du nouveau.</td></tr>
+<tr data-k="session.tab.close"><td><b>Close tab</b><br><span class="id">session.tab.close</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>W</kbd></td><td></td><td>Fermer l&#x27;onglet (la session reste enregistrée).</td></tr>
+<tr data-k="session.tab.reopen"><td><b>Reopen closed tab</b><br><span class="id">session.tab.reopen</span></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd></td><td></td><td>Rouvrir le dernier onglet fermé.</td></tr>
+<tr data-k="session.timeline"><td><b>Jump to message</b><br><span class="id">session.timeline</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>G</kbd></td><td><code>/timeline</code></td><td>Timeline : sauter directement à un ancien message (aussi /timeline).</td></tr>
+<tr data-k="session.fork"><td><b>Fork</b><br><span class="id">session.fork</span></td><td><span class="cat">aucun</span></td><td><code>/fork</code></td><td>Copier la conversation à partir d&#x27;un message pour tester une autre piste sans toucher l&#x27;originale (aussi /fork).</td></tr>
+<tr data-k="session.rename"><td><b>Rename session</b><br><span class="id">session.rename</span></td><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td><code>/rename</code></td><td>Renommer la session (aussi /rename). Dans la liste des sessions aussi.</td></tr>
+<tr data-k="session.delete"><td><b>Delete session</b><br><span class="id">session.delete</span></td><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td></td><td>Supprimer la session (dans la liste des sessions).</td></tr>
+<tr data-k="session.share"><td><b>Share session</b><br><span class="id">session.share</span></td><td><span class="cat">aucun</span></td><td><code>/share</code></td><td>Partager la session en ligne (aussi /share). Pas encore actif dans cette version.</td></tr>
+<tr data-k="session.unshare"><td><b>Unshare current session</b><br><span class="id">session.unshare</span></td><td><span class="cat">aucun</span></td><td></td><td>Arrêter le partage d&#x27;une session.</td></tr>
+<tr data-k="session.interrupt"><td><b>Interrupt session</b><br><span class="id">session.interrupt</span></td><td><kbd>Esc</kbd></td><td></td><td>Interrompre l&#x27;agent en cours de travail.</td></tr>
+<tr data-k="session.background"><td><b>Background blocking tools</b><br><span class="id">session.background</span></td><td><kbd>Ctrl</kbd>+<kbd>B</kbd></td><td></td><td>Envoyer en arrière-plan un outil qui bloque (commande longue) pour continuer à discuter.</td></tr>
+<tr data-k="session.compact"><td><b>Compact session</b><br><span class="id">session.compact</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>C</kbd></td><td><code>/compact</code></td><td>Résumer la conversation pour libérer de la mémoire (aussi /compact).</td></tr>
+<tr data-k="session.aside"><td><b>Ask a side question</b><br><span class="id">session.aside</span></td><td><span class="cat">aucun</span></td><td><code>/btw</code></td><td>Poser une question rapide hors conversation (aussi /btw &lt;question&gt;).</td></tr>
+<tr data-k="session.cd"><td><b>Change working directory</b><br><span class="id">session.cd</span></td><td><span class="cat">aucun</span></td><td><code>/cd</code></td><td>Changer le dossier de travail (aussi /cd). Reste dans D:\IA LOCAL.</td></tr>
+<tr data-k="session.queued_prompts"><td><b>View queued prompts</b><br><span class="id">session.queued_prompts</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>Q</kbd></td><td></td><td>Voir/gérer les messages mis en file d&#x27;attente pendant que l&#x27;agent travaille.</td></tr>
+<tr data-k="queued_prompt.undo"><td><b>Undo queued prompt</b><br><span class="id">queued_prompt.undo</span></td><td><kbd>Ctrl</kbd>+<kbd>U</kbd></td><td></td><td>Annuler un message en file d&#x27;attente (le remettre dans le prompt).</td></tr>
+<tr data-k="queued_prompt.delete"><td><b>Delete queued prompt</b><br><span class="id">queued_prompt.delete</span></td><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td></td><td>Supprimer un message en file d&#x27;attente.</td></tr>
+<tr data-k="session.toggle.exploration_grouping"><td><b>Toggle related tool call grouping</b><br><span class="id">session.toggle.exploration_grouping</span></td><td><span class="cat">aucun</span></td><td></td><td>Regrouper ou non les actions liées (« Explored: 2 searches ») — Settings → Tool grouping.</td></tr>
+<tr data-k="session.child.first"><td><b>Toggle subagent picker</b><br><span class="id">session.child.first</span></td><td><kbd>↓</kbd></td><td></td><td>Ouvrir le sélecteur des sous-agents lancés par l&#x27;agent.</td></tr>
+<tr data-k="session.child.next"><td><b>Go to next child session</b><br><span class="id">session.child.next</span></td><td><kbd>→</kbd></td><td></td><td>Sous-session (sous-agent) suivante.</td></tr>
+<tr data-k="session.child.previous"><td><b>Go to previous child session</b><br><span class="id">session.child.previous</span></td><td><kbd>←</kbd></td><td></td><td>Sous-session (sous-agent) précédente.</td></tr>
+<tr data-k="session.parent"><td><b>Go to parent session</b><br><span class="id">session.parent</span></td><td><kbd>↑</kbd></td><td></td><td>Revenir à la session principale depuis un sous-agent.</td></tr>
+<tr data-k="session.pin.toggle"><td><b>Pin or unpin session in the session list</b><br><span class="id">session.pin.toggle</span></td><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td></td><td>Épingler/désépingler une session en haut de la liste des sessions.</td></tr>
+<tr data-k="session.quick_switch.1"><td><b>Switch to session in quick slot 1</b><br><span class="id">session.quick_switch.1</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>1</kbd></td><td></td><td>Aller à la session du raccourci rapide n°1 (idem 2 à 9).</td></tr>
+<tr data-k="session.tab.select.1"><td><b>Switch to session tab 1</b><br><span class="id">session.tab.select.1</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>1</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>1</kbd></td><td></td><td>Aller à l&#x27;onglet n°1 (idem 2 à 9 ; Ctrl+0 = onglet 10).</td></tr>
+<tr data-k="session.copy.id"><td><b>Copy session ID</b><br><span class="id">session.copy.id</span></td><td><span class="cat">aucun</span></td><td></td><td>Copier l&#x27;identifiant de la session (ses_…), utile pour la rouvrir avec --session.</td></tr>
+<tr data-k="session.clear"><td><b>Clear session</b><br><span class="id">session.clear</span></td><td><span class="cat">aucun</span></td><td><code>/clear</code></td><td>Vider la conversation en cours (aussi /clear).</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Modèles et profils <span class="cat">(15)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="stash.delete"><td><b>Delete stash entry</b><br><span class="id">stash.delete</span></td><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td></td><td>Supprimer un brouillon mis de côté (dans la liste des brouillons).</td></tr>
+<tr data-k="model.dialog.provider"><td><b>Open provider list from model dialog</b><br><span class="id">model.dialog.provider</span></td><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td></td><td>Dans la liste des modèles : afficher par fournisseur.</td></tr>
+<tr data-k="model.dialog.favorite"><td><b>Toggle model favorite status</b><br><span class="id">model.dialog.favorite</span></td><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td></td><td>Dans la liste des modèles : mettre/retirer un modèle des favoris.</td></tr>
+<tr data-k="model.list"><td><b>Switch model</b><br><span class="id">model.list</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>M</kbd></td><td><code>/models</code></td><td>Choisir le modèle (aussi /models).</td></tr>
+<tr data-k="model.cycle_recent"><td><b>Model cycle</b><br><span class="id">model.cycle_recent</span></td><td><kbd>F2</kbd></td><td></td><td>Passer au modèle utilisé récemment suivant (ex. agent ↔ code).</td></tr>
+<tr data-k="model.cycle_recent_reverse"><td><b>Model cycle reverse</b><br><span class="id">model.cycle_recent_reverse</span></td><td><kbd>Shift</kbd>+<kbd>F2</kbd></td><td></td><td>Modèle récent précédent.</td></tr>
+<tr data-k="model.cycle_favorite"><td><b>Favorite cycle</b><br><span class="id">model.cycle_favorite</span></td><td><span class="cat">aucun</span></td><td></td><td>Modèle favori suivant.</td></tr>
+<tr data-k="model.cycle_favorite_reverse"><td><b>Favorite cycle reverse</b><br><span class="id">model.cycle_favorite_reverse</span></td><td><span class="cat">aucun</span></td><td></td><td>Modèle favori précédent.</td></tr>
+<tr data-k="mcp.list"><td><b>MCP servers</b><br><span class="id">mcp.list</span></td><td><span class="cat">aucun</span></td><td><code>/mcps</code></td><td>Voir les serveurs MCP (REA, Playwright, Perplexity), les connecter/déconnecter avec Espace (aussi /mcps).</td></tr>
+<tr data-k="provider.connect"><td><b>Connect an integration</b><br><span class="id">provider.connect</span></td><td><span class="cat">aucun</span></td><td><code>/connect</code></td><td>Brancher un fournisseur en ligne (aussi /connect). Bloqué chez toi : 100 % local.</td></tr>
+<tr data-k="agent.list"><td><b>Switch agent</b><br><span class="id">agent.list</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>A</kbd></td><td><code>/agents</code></td><td>Choisir le profil : Build, Plan, reverse-web (aussi /agents).</td></tr>
+<tr data-k="agent.cycle"><td><b>Agent cycle</b><br><span class="id">agent.cycle</span></td><td><kbd>Shift</kbd>+<kbd>Tab</kbd></td><td></td><td>Profil suivant.</td></tr>
+<tr data-k="agent.cycle.reverse"><td><b>Agent cycle reverse</b><br><span class="id">agent.cycle.reverse</span></td><td><span class="cat">aucun</span></td><td></td><td>Profil précédent.</td></tr>
+<tr data-k="variant.cycle"><td><b>Variant cycle</b><br><span class="id">variant.cycle</span></td><td><kbd>Ctrl</kbd>+<kbd>T</kbd></td><td></td><td>Variante suivante du modèle (niveau de réflexion), si le modèle en propose.</td></tr>
+<tr data-k="variant.list"><td><b>Switch model variant</b><br><span class="id">variant.list</span></td><td><span class="cat">aucun</span></td><td><code>/variants</code></td><td>Liste des variantes du modèle (aussi /variants, /thinking, /effort). Aucune définie pour tes modèles locaux.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Prompt (zone de saisie) <span class="cat">(8)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="prompt.submit"><td><b>Submit prompt</b><br><span class="id">prompt.submit</span></td><td><span class="cat">aucun</span></td><td></td><td>Envoyer le message.</td></tr>
+<tr data-k="prompt.queue"><td><b>Queue prompt</b><br><span class="id">prompt.queue</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>Entrée</kbd></td><td></td><td>Mettre le message en file d&#x27;attente (il partira quand l&#x27;agent aura fini).</td></tr>
+<tr data-k="prompt.editor_context.clear"><td><b>Remove editor context</b><br><span class="id">prompt.editor_context.clear</span></td><td><span class="cat">aucun</span></td><td></td><td>Retirer le contexte de fichier joint automatiquement depuis l&#x27;éditeur.</td></tr>
+<tr data-k="prompt.images.view"><td><b>View image attachments</b><br><span class="id">prompt.images.view</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>I</kbd></td><td></td><td>Voir les images jointes au message.</td></tr>
+<tr data-k="prompt.skills"><td><b>Skills</b><br><span class="id">prompt.skills</span></td><td><span class="cat">aucun</span></td><td><code>/skills</code></td><td>Ouvrir le sélecteur de skills (fiches) à joindre au message (aussi /skills).</td></tr>
+<tr data-k="prompt.stash"><td><b>Stash prompt</b><br><span class="id">prompt.stash</span></td><td><span class="cat">aucun</span></td><td></td><td>Mettre ton brouillon de côté pour écrire autre chose.</td></tr>
+<tr data-k="prompt.stash.pop"><td><b>Stash pop</b><br><span class="id">prompt.stash.pop</span></td><td><span class="cat">aucun</span></td><td></td><td>Récupérer le dernier brouillon mis de côté.</td></tr>
+<tr data-k="prompt.stash.list"><td><b>Stash list</b><br><span class="id">prompt.stash.list</span></td><td><span class="cat">aucun</span></td><td></td><td>Liste des brouillons mis de côté.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Navigation dans la conversation <span class="cat">(20)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="session.page.up"><td><b>Page up</b><br><span class="id">session.page.up</span></td><td><kbd>PgUp</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>B</kbd></td><td></td><td>Remonter d&#x27;une page dans la conversation.</td></tr>
+<tr data-k="session.page.down"><td><b>Page down</b><br><span class="id">session.page.down</span></td><td><kbd>PgDn</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd></td><td></td><td>Descendre d&#x27;une page.</td></tr>
+<tr data-k="session.line.up"><td><b>Line up</b><br><span class="id">session.line.up</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Y</kbd></td><td></td><td>Remonter d&#x27;une ligne.</td></tr>
+<tr data-k="session.line.down"><td><b>Line down</b><br><span class="id">session.line.down</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>E</kbd></td><td></td><td>Descendre d&#x27;une ligne.</td></tr>
+<tr data-k="session.half.page.up"><td><b>Half page up</b><br><span class="id">session.half.page.up</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>U</kbd></td><td></td><td>Remonter d&#x27;une demi-page.</td></tr>
+<tr data-k="session.half.page.down"><td><b>Half page down</b><br><span class="id">session.half.page.down</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd></td><td></td><td>Descendre d&#x27;une demi-page.</td></tr>
+<tr data-k="session.first"><td><b>First message</b><br><span class="id">session.first</span></td><td><kbd>Ctrl</kbd>+<kbd>G</kbd> <span class='cat'>ou</span> <kbd>Début</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>Début</kbd></td><td></td><td>Aller au premier message.</td></tr>
+<tr data-k="session.last"><td><b>Last message</b><br><span class="id">session.last</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>G</kbd> <span class='cat'>ou</span> <kbd>Fin</kbd></td><td></td><td>Aller au dernier message.</td></tr>
+<tr data-k="session.message.next"><td><b>Next message</b><br><span class="id">session.message.next</span></td><td><span class="cat">aucun</span></td><td></td><td>Message suivant.</td></tr>
+<tr data-k="session.message.previous"><td><b>Previous message</b><br><span class="id">session.message.previous</span></td><td><span class="cat">aucun</span></td><td></td><td>Message précédent.</td></tr>
+<tr data-k="session.message.user.next"><td><b>Next user message</b><br><span class="id">session.message.user.next</span></td><td><span class="cat">aucun</span></td><td></td><td>Ton message suivant.</td></tr>
+<tr data-k="session.message.user.previous"><td><b>Previous user message</b><br><span class="id">session.message.user.previous</span></td><td><span class="cat">aucun</span></td><td></td><td>Ton message précédent.</td></tr>
+<tr data-k="session.messages_last_user"><td><b>Jump to last user message</b><br><span class="id">session.messages_last_user</span></td><td><kbd>Alt</kbd>+<kbd>Fin</kbd></td><td></td><td>Aller à ton dernier message.</td></tr>
+<tr data-k="messages.copy"><td><b>Copy last assistant message</b><br><span class="id">messages.copy</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>Y</kbd></td><td></td><td>Copier la dernière réponse de l&#x27;agent.</td></tr>
+<tr data-k="session.undo"><td><b>Undo previous message</b><br><span class="id">session.undo</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>U</kbd></td><td><code>/undo</code></td><td>Annuler ton dernier message ET les modifications de fichiers qui ont suivi ; ton texte revient dans le prompt (aussi /undo).</td></tr>
+<tr data-k="session.redo"><td><b>Redo</b><br><span class="id">session.redo</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>R</kbd></td><td><code>/redo</code></td><td>Rétablir ce que l&#x27;annulation a enlevé (aussi /redo).</td></tr>
+<tr data-k="session.toggle.thinking"><td><b>Toggle thinking blocks visibility</b><br><span class="id">session.toggle.thinking</span></td><td><span class="cat">aucun</span></td><td></td><td>Afficher/masquer la réflexion du modèle (« + Thought »).</td></tr>
+<tr data-k="message.jump"><td><b>Jump to</b><br><span class="id">message.jump</span></td><td><span class="cat">aucun</span></td><td></td><td>Aller à ce message (menu d&#x27;un message).</td></tr>
+<tr data-k="session.revert"><td><b>Revert</b><br><span class="id">session.revert</span></td><td><span class="cat">aucun</span></td><td></td><td>Revenir à ce message (annule ce qui a suivi) — menu d&#x27;un message.</td></tr>
+<tr data-k="message.copy"><td><b>Copy</b><br><span class="id">message.copy</span></td><td><span class="cat">aucun</span></td><td></td><td>Copier ce message (menu d&#x27;un message).</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Apparence et navigation <span class="cat">(9)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="prompt.editor"><td><b>Open editor</b><br><span class="id">prompt.editor</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>E</kbd></td><td><code>/editor</code></td><td>Écrire le prompt dans un éditeur externe (variable EDITOR requise), puis revenir (aussi /editor).</td></tr>
+<tr data-k="theme.switch"><td><b>Switch theme</b><br><span class="id">theme.switch</span></td><td><span class="cat">aucun</span></td><td><code>/themes</code></td><td>Choisir un thème de couleurs, avec aperçu en direct (aussi /themes).</td></tr>
+<tr data-k="theme.switch_mode"><td><b>Switch between light and dark theme mode</b><br><span class="id">theme.switch_mode</span></td><td><span class="cat">aucun</span></td><td></td><td>Basculer entre mode clair et mode sombre.</td></tr>
+<tr data-k="theme.mode.lock"><td><b>Lock or unlock theme mode</b><br><span class="id">theme.mode.lock</span></td><td><span class="cat">aucun</span></td><td></td><td>Verrouiller le mode clair/sombre (ne plus suivre le terminal).</td></tr>
+<tr data-k="session.sidebar.toggle"><td><b>Toggle sidebar</b><br><span class="id">session.sidebar.toggle</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>B</kbd></td><td></td><td>Afficher/masquer la sidebar de droite (Context, MCP, dossier).</td></tr>
+<tr data-k="terminal.toggle"><td><b>Toggle terminal pane</b><br><span class="id">terminal.toggle</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>T</kbd></td><td></td><td>Afficher/masquer le panneau terminal intégré.</td></tr>
+<tr data-k="session.toggle.scrollbar"><td><b>Toggle session scrollbar</b><br><span class="id">session.toggle.scrollbar</span></td><td><span class="cat">aucun</span></td><td></td><td>Afficher/masquer la barre de défilement de la conversation.</td></tr>
+<tr data-k="opencode.status"><td><b>View status</b><br><span class="id">opencode.status</span></td><td><kbd>Ctrl</kbd>+<kbd>X</kbd> puis <kbd>S</kbd></td><td><code>/status</code></td><td>Voir l&#x27;état : serveur, MCP connectés, modèle, chemins (aussi /status).</td></tr>
+<tr data-k="opencode.debug"><td><b>View debug info</b><br><span class="id">opencode.debug</span></td><td><span class="cat">aucun</span></td><td><code>/debug</code></td><td>Infos techniques de dépannage (aussi /debug).</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Édition du texte <span class="cat">(40)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="prompt.clear"><td><b>Clear prompt</b><br><span class="id">prompt.clear</span></td><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td></td><td>Vider le champ de saisie (2e appui sur prompt vide = quitter).</td></tr>
+<tr data-k="prompt.paste"><td><b>Paste</b><br><span class="id">prompt.paste</span></td><td><kbd>Ctrl</kbd>+<kbd>V</kbd></td><td></td><td>Coller depuis le presse-papiers (texte ou image).</td></tr>
+<tr data-k="input.submit"><td><b>Submit input</b><br><span class="id">input.submit</span></td><td><kbd>Entrée</kbd></td><td></td><td>Valider la saisie.</td></tr>
+<tr data-k="input.newline"><td><b>Insert newline in input</b><br><span class="id">input.newline</span></td><td><kbd>Shift</kbd>+<kbd>Entrée</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>Entrée</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>Entrée</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>J</kbd></td><td></td><td>Aller à la ligne sans envoyer.</td></tr>
+<tr data-k="input.move.left"><td><b>Move cursor left in input</b><br><span class="id">input.move.left</span></td><td><kbd>←</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>B</kbd></td><td></td><td>Curseur à gauche.</td></tr>
+<tr data-k="input.move.right"><td><b>Move cursor right in input</b><br><span class="id">input.move.right</span></td><td><kbd>→</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>F</kbd></td><td></td><td>Curseur à droite.</td></tr>
+<tr data-k="input.move.up"><td><b>Move cursor up in input</b><br><span class="id">input.move.up</span></td><td><kbd>↑</kbd></td><td></td><td>Curseur ligne du dessus.</td></tr>
+<tr data-k="input.move.down"><td><b>Move cursor down in input</b><br><span class="id">input.move.down</span></td><td><kbd>↓</kbd></td><td></td><td>Curseur ligne du dessous.</td></tr>
+<tr data-k="input.select.left"><td><b>Select left in input</b><br><span class="id">input.select.left</span></td><td><kbd>Shift</kbd>+<kbd>←</kbd></td><td></td><td>Sélectionner vers la gauche.</td></tr>
+<tr data-k="input.select.right"><td><b>Select right in input</b><br><span class="id">input.select.right</span></td><td><kbd>Shift</kbd>+<kbd>→</kbd></td><td></td><td>Sélectionner vers la droite.</td></tr>
+<tr data-k="input.select.up"><td><b>Select up in input</b><br><span class="id">input.select.up</span></td><td><kbd>Shift</kbd>+<kbd>↑</kbd></td><td></td><td>Sélectionner vers le haut.</td></tr>
+<tr data-k="input.select.down"><td><b>Select down in input</b><br><span class="id">input.select.down</span></td><td><kbd>Shift</kbd>+<kbd>↓</kbd></td><td></td><td>Sélectionner vers le bas.</td></tr>
+<tr data-k="input.line.home"><td><b>Move to start of line in input</b><br><span class="id">input.line.home</span></td><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td></td><td>Début de la ligne.</td></tr>
+<tr data-k="input.line.end"><td><b>Move to end of line in input</b><br><span class="id">input.line.end</span></td><td><kbd>Ctrl</kbd>+<kbd>E</kbd></td><td></td><td>Fin de la ligne.</td></tr>
+<tr data-k="input.select.line.home"><td><b>Select to start of line in input</b><br><span class="id">input.select.line.home</span></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd></td><td></td><td>Sélectionner jusqu&#x27;au début de la ligne.</td></tr>
+<tr data-k="input.select.line.end"><td><b>Select to end of line in input</b><br><span class="id">input.select.line.end</span></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd></td><td></td><td>Sélectionner jusqu&#x27;à la fin de la ligne.</td></tr>
+<tr data-k="input.visual.line.home"><td><b>Move to start of visual line in input</b><br><span class="id">input.visual.line.home</span></td><td><kbd>Alt</kbd>+<kbd>A</kbd></td><td></td><td>Début de la ligne affichée (si le texte est replié sur plusieurs lignes).</td></tr>
+<tr data-k="input.visual.line.end"><td><b>Move to end of visual line in input</b><br><span class="id">input.visual.line.end</span></td><td><kbd>Alt</kbd>+<kbd>E</kbd></td><td></td><td>Fin de la ligne affichée.</td></tr>
+<tr data-k="input.select.visual.line.home"><td><b>Select to start of visual line in input</b><br><span class="id">input.select.visual.line.home</span></td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd></td><td></td><td>Sélectionner jusqu&#x27;au début de la ligne affichée.</td></tr>
+<tr data-k="input.select.visual.line.end"><td><b>Select to end of visual line in input</b><br><span class="id">input.select.visual.line.end</span></td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd></td><td></td><td>Sélectionner jusqu&#x27;à la fin de la ligne affichée.</td></tr>
+<tr data-k="input.buffer.home"><td><b>Move to start of buffer in input</b><br><span class="id">input.buffer.home</span></td><td><span class="cat">aucun</span></td><td></td><td>Tout début du texte.</td></tr>
+<tr data-k="input.buffer.end"><td><b>Move to end of buffer in input</b><br><span class="id">input.buffer.end</span></td><td><span class="cat">aucun</span></td><td></td><td>Toute fin du texte.</td></tr>
+<tr data-k="input.select.buffer.home"><td><b>Select to start of buffer in input</b><br><span class="id">input.select.buffer.home</span></td><td><kbd>Shift</kbd>+<kbd>Début</kbd></td><td></td><td>Sélectionner jusqu&#x27;au tout début.</td></tr>
+<tr data-k="input.select.buffer.end"><td><b>Select to end of buffer in input</b><br><span class="id">input.select.buffer.end</span></td><td><kbd>Shift</kbd>+<kbd>Fin</kbd></td><td></td><td>Sélectionner jusqu&#x27;à la toute fin.</td></tr>
+<tr data-k="input.delete.line"><td><b>Delete line in input</b><br><span class="id">input.delete.line</span></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td><td></td><td>Supprimer la ligne.</td></tr>
+<tr data-k="input.delete.to.line.end"><td><b>Delete to end of line in input</b><br><span class="id">input.delete.to.line.end</span></td><td><kbd>Ctrl</kbd>+<kbd>K</kbd></td><td></td><td>Supprimer jusqu&#x27;à la fin de la ligne.</td></tr>
+<tr data-k="input.delete.to.line.start"><td><b>Delete to start of line in input</b><br><span class="id">input.delete.to.line.start</span></td><td><kbd>Ctrl</kbd>+<kbd>U</kbd></td><td></td><td>Supprimer jusqu&#x27;au début de la ligne.</td></tr>
+<tr data-k="input.backspace"><td><b>Backspace in input</b><br><span class="id">input.backspace</span></td><td><kbd>Retour arr.</kbd> <span class='cat'>ou</span> <kbd>Shift</kbd>+<kbd>Retour arr.</kbd></td><td></td><td>Effacer le caractère avant le curseur.</td></tr>
+<tr data-k="input.delete"><td><b>Delete character in input</b><br><span class="id">input.delete</span></td><td><kbd>Ctrl</kbd>+<kbd>D</kbd> <span class='cat'>ou</span> <kbd>Suppr</kbd> <span class='cat'>ou</span> <kbd>Shift</kbd>+<kbd>Suppr</kbd></td><td></td><td>Effacer le caractère après le curseur.</td></tr>
+<tr data-k="input.undo"><td><b>Undo in input</b><br><span class="id">input.undo</span></td><td><kbd>Ctrl</kbd>+<kbd>-</kbd> <span class='cat'>ou</span> <kbd>Win</kbd>+<kbd>Z</kbd></td><td></td><td>Annuler la dernière frappe.</td></tr>
+<tr data-k="input.redo"><td><b>Redo in input</b><br><span class="id">input.redo</span></td><td><kbd>Ctrl</kbd>+<kbd>.</kbd> <span class='cat'>ou</span> <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td></td><td>Rétablir la frappe annulée.</td></tr>
+<tr data-k="input.word.forward"><td><b>Move word forward in input</b><br><span class="id">input.word.forward</span></td><td><kbd>Alt</kbd>+<kbd>F</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>→</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>→</kbd></td><td></td><td>Mot suivant.</td></tr>
+<tr data-k="input.word.backward"><td><b>Move word backward in input</b><br><span class="id">input.word.backward</span></td><td><kbd>Alt</kbd>+<kbd>B</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>←</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>←</kbd></td><td></td><td>Mot précédent.</td></tr>
+<tr data-k="input.select.word.forward"><td><b>Select word forward in input</b><br><span class="id">input.select.word.forward</span></td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>→</kbd></td><td></td><td>Sélectionner le mot suivant.</td></tr>
+<tr data-k="input.select.word.backward"><td><b>Select word backward in input</b><br><span class="id">input.select.word.backward</span></td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>←</kbd></td><td></td><td>Sélectionner le mot précédent.</td></tr>
+<tr data-k="input.delete.word.forward"><td><b>Delete word forward in input</b><br><span class="id">input.delete.word.forward</span></td><td><kbd>Alt</kbd>+<kbd>D</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>Suppr</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>Suppr</kbd></td><td></td><td>Supprimer le mot suivant.</td></tr>
+<tr data-k="input.delete.word.backward"><td><b>Delete word backward in input</b><br><span class="id">input.delete.word.backward</span></td><td><kbd>Ctrl</kbd>+<kbd>W</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>Retour arr.</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>Retour arr.</kbd></td><td></td><td>Supprimer le mot précédent.</td></tr>
+<tr data-k="input.select.all"><td><b>Select all in input</b><br><span class="id">input.select.all</span></td><td><kbd>Win</kbd>+<kbd>A</kbd></td><td></td><td>Tout sélectionner (Super = touche Windows).</td></tr>
+<tr data-k="prompt.history.previous"><td><b>Previous prompt history</b><br><span class="id">prompt.history.previous</span></td><td><kbd>↑</kbd></td><td></td><td>Rappeler ton message précédent (historique).</td></tr>
+<tr data-k="prompt.history.next"><td><b>Next prompt history</b><br><span class="id">prompt.history.next</span></td><td><kbd>↓</kbd></td><td></td><td>Message suivant dans l&#x27;historique.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Fenêtres, listes et suggestions <span class="cat">(27)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="dialog.select.prev"><td><b>Previous item</b><br><span class="id">dialog.select.prev</span></td><td><kbd>↑</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>P</kbd></td><td></td><td>Élément précédent dans une liste/fenêtre.</td></tr>
+<tr data-k="dialog.select.next"><td><b>Next item</b><br><span class="id">dialog.select.next</span></td><td><kbd>↓</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>N</kbd></td><td></td><td>Élément suivant.</td></tr>
+<tr data-k="dialog.select.page_up"><td><b>Page up</b><br><span class="id">dialog.select.page_up</span></td><td><kbd>PgUp</kbd></td><td></td><td>Page précédente de la liste.</td></tr>
+<tr data-k="dialog.select.page_down"><td><b>Page down</b><br><span class="id">dialog.select.page_down</span></td><td><kbd>PgDn</kbd></td><td></td><td>Page suivante de la liste.</td></tr>
+<tr data-k="dialog.select.home"><td><b>First item</b><br><span class="id">dialog.select.home</span></td><td><kbd>Début</kbd></td><td></td><td>Premier élément.</td></tr>
+<tr data-k="dialog.select.end"><td><b>Last item</b><br><span class="id">dialog.select.end</span></td><td><kbd>Fin</kbd></td><td></td><td>Dernier élément.</td></tr>
+<tr data-k="dialog.select.submit"><td><b>Select item</b><br><span class="id">dialog.select.submit</span></td><td><kbd>Entrée</kbd></td><td></td><td>Valider l&#x27;élément choisi.</td></tr>
+<tr data-k="dialog.prompt.submit"><td><b>Submit dialog prompt</b><br><span class="id">dialog.prompt.submit</span></td><td><kbd>Entrée</kbd></td><td></td><td>Valider le texte saisi dans une fenêtre.</td></tr>
+<tr data-k="dialog.worktree.generate"><td><b>Generate worktree name</b><br><span class="id">dialog.worktree.generate</span></td><td><kbd>Tab</kbd></td><td></td><td>Générer un nom de worktree (Git).</td></tr>
+<tr data-k="dialog.move_session.new"><td><b>New worktree</b><br><span class="id">dialog.move_session.new</span></td><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td></td><td>Nouveau worktree (Git).</td></tr>
+<tr data-k="dialog.move_session.move"><td><b>Move session to worktree</b><br><span class="id">dialog.move_session.move</span></td><td><kbd>Ctrl</kbd>+<kbd>M</kbd></td><td></td><td>Déplacer la session vers ce worktree.</td></tr>
+<tr data-k="dialog.move_session.delete"><td><b>Delete worktree</b><br><span class="id">dialog.move_session.delete</span></td><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td></td><td>Supprimer ce worktree.</td></tr>
+<tr data-k="dialog.move_session.refresh"><td><b>Refresh worktrees</b><br><span class="id">dialog.move_session.refresh</span></td><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td></td><td>Rafraîchir la liste des worktrees.</td></tr>
+<tr data-k="prompt.autocomplete.prev"><td><b>Previous autocomplete item</b><br><span class="id">prompt.autocomplete.prev</span></td><td><kbd>↑</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>P</kbd></td><td></td><td>Suggestion précédente (après @ ou /).</td></tr>
+<tr data-k="prompt.autocomplete.next"><td><b>Next autocomplete item</b><br><span class="id">prompt.autocomplete.next</span></td><td><kbd>↓</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>N</kbd></td><td></td><td>Suggestion suivante.</td></tr>
+<tr data-k="prompt.autocomplete.hide"><td><b>Hide autocomplete</b><br><span class="id">prompt.autocomplete.hide</span></td><td><kbd>Esc</kbd></td><td></td><td>Fermer les suggestions.</td></tr>
+<tr data-k="prompt.autocomplete.select"><td><b>Select autocomplete item</b><br><span class="id">prompt.autocomplete.select</span></td><td><kbd>Entrée</kbd></td><td></td><td>Choisir la suggestion.</td></tr>
+<tr data-k="prompt.autocomplete.complete"><td><b>Complete autocomplete item</b><br><span class="id">prompt.autocomplete.complete</span></td><td><kbd>Tab</kbd></td><td></td><td>Compléter avec la suggestion.</td></tr>
+<tr data-k="permission.prompt.fullscreen"><td><b>Toggle permission fullscreen</b><br><span class="id">permission.prompt.fullscreen</span></td><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td></td><td>Afficher en plein écran une demande de permission (pour bien lire la commande).</td></tr>
+<tr data-k="plugins.toggle"><td><b>Toggle plugin</b><br><span class="id">plugins.toggle</span></td><td><kbd>Entrée</kbd></td><td></td><td>Activer/désactiver un plugin dans la liste.</td></tr>
+<tr data-k="dialog.mcp.toggle"><td><b>Toggle MCP server</b><br><span class="id">dialog.mcp.toggle</span></td><td><kbd>Espace</kbd></td><td></td><td>Connecter/déconnecter un serveur MCP dans la liste /mcps.</td></tr>
+<tr data-k="dialog.plugins.update"><td><b>Update plugin from plugin dialog</b><br><span class="id">dialog.plugins.update</span></td><td><kbd>Ctrl</kbd>+<kbd>U</kbd></td><td></td><td>Mettre à jour un plugin.</td></tr>
+<tr data-k="dialog.plugins.check"><td><b>Check for plugin updates</b><br><span class="id">dialog.plugins.check</span></td><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td></td><td>Vérifier les mises à jour des plugins.</td></tr>
+<tr data-k="dialog.plugins.error"><td><b>view error</b><br><span class="id">dialog.plugins.error</span></td><td><span class="cat">aucun</span></td><td></td><td>Voir l&#x27;erreur d&#x27;un plugin.</td></tr>
+<tr data-k="dialog.integration.rename"><td><b>rename</b><br><span class="id">dialog.integration.rename</span></td><td><span class="cat">aucun</span></td><td></td><td>Renommer un compte connecté (fournisseur).</td></tr>
+<tr data-k="dialog.integration.delete"><td><b>delete</b><br><span class="id">dialog.integration.delete</span></td><td><span class="cat">aucun</span></td><td></td><td>Supprimer un compte connecté.</td></tr>
+<tr data-k="prompt.autocomplete.destructive"><td><b>Confirm autocomplete action</b><br><span class="id">prompt.autocomplete.destructive</span></td><td><span class="cat">aucun</span></td><td></td><td>Confirmer une action de suggestion qui supprime quelque chose.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Sous-agents, shells et terminaux <span class="cat">(12)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="composer.subagent.up"><td><b>Previous subagent</b><br><span class="id">composer.subagent.up</span></td><td><kbd>↑</kbd></td><td></td><td>Sous-agent précédent dans la liste des sous-agents actifs.</td></tr>
+<tr data-k="composer.subagent.down"><td><b>Next subagent</b><br><span class="id">composer.subagent.down</span></td><td><kbd>↓</kbd></td><td></td><td>Sous-agent suivant.</td></tr>
+<tr data-k="composer.subagent.select"><td><b>Navigate to subagent</b><br><span class="id">composer.subagent.select</span></td><td><kbd>Entrée</kbd></td><td></td><td>Ouvrir le sous-agent sélectionné.</td></tr>
+<tr data-k="composer.subagent.interrupt"><td><b>Interrupt subagent</b><br><span class="id">composer.subagent.interrupt</span></td><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td></td><td>Arrêter le sous-agent sélectionné.</td></tr>
+<tr data-k="composer.shell.up"><td><b>Previous shell</b><br><span class="id">composer.shell.up</span></td><td><kbd>↑</kbd></td><td></td><td>Commande en cours précédente (onglet Shell).</td></tr>
+<tr data-k="composer.shell.down"><td><b>Next shell</b><br><span class="id">composer.shell.down</span></td><td><kbd>↓</kbd></td><td></td><td>Commande en cours suivante.</td></tr>
+<tr data-k="composer.shell.select"><td><b>View shell output</b><br><span class="id">composer.shell.select</span></td><td><kbd>Entrée</kbd></td><td></td><td>Voir la sortie de la commande sélectionnée (stdout/stderr).</td></tr>
+<tr data-k="composer.shell.kill"><td><b>Kill shell command</b><br><span class="id">composer.shell.kill</span></td><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td></td><td>Arrêter (tuer) la commande sélectionnée.</td></tr>
+<tr data-k="composer.subagent.toggle-activity"><td><b>Toggle active subagents</b><br><span class="id">composer.subagent.toggle-activity</span></td><td><span class="cat">aucun</span></td><td></td><td>Afficher/masquer les sous-agents actifs.</td></tr>
+<tr data-k="composer.terminal.up"><td><b>Previous terminal</b><br><span class="id">composer.terminal.up</span></td><td><span class="cat">aucun</span></td><td></td><td>Terminal précédent.</td></tr>
+<tr data-k="composer.terminal.down"><td><b>Next terminal</b><br><span class="id">composer.terminal.down</span></td><td><span class="cat">aucun</span></td><td></td><td>Terminal suivant.</td></tr>
+<tr data-k="composer.terminal.select"><td><b>Select terminal</b><br><span class="id">composer.terminal.select</span></td><td><span class="cat">aucun</span></td><td></td><td>Ouvrir le terminal sélectionné.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Terminal et plugins <span class="cat">(8)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="terminal.suspend"><td><b>Suspend terminal</b><br><span class="id">terminal.suspend</span></td><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td></td><td>Mettre OpenCode en pause et revenir au terminal (Linux/Mac surtout).</td></tr>
+<tr data-k="terminal.title.toggle"><td><b>Toggle terminal title</b><br><span class="id">terminal.title.toggle</span></td><td><span class="cat">aucun</span></td><td></td><td>Mettre ou non le nom de la session dans le titre de la fenêtre.</td></tr>
+<tr data-k="plugins.list"><td><b>Plugins</b><br><span class="id">plugins.list</span></td><td><span class="cat">aucun</span></td><td><code>/plugins</code></td><td>Gestionnaire de plugins (aussi /plugins). Code tiers : prudence.</td></tr>
+<tr data-k="pane.focus.left"><td><b>Focus session pane</b><br><span class="id">pane.focus.left</span></td><td><span class="cat">aucun</span></td><td></td><td>Mettre le focus sur la conversation (panneau de gauche).</td></tr>
+<tr data-k="pane.focus.right"><td><b>Focus right pane</b><br><span class="id">pane.focus.right</span></td><td><span class="cat">aucun</span></td><td></td><td>Mettre le focus sur le panneau de droite (terminal…).</td></tr>
+<tr data-k="terminal.select"><td><b>Select terminal</b><br><span class="id">terminal.select</span></td><td><span class="cat">aucun</span></td><td></td><td>Choisir un terminal intégré.</td></tr>
+<tr data-k="terminal.close"><td><b>Close terminal pane</b><br><span class="id">terminal.close</span></td><td><span class="cat">aucun</span></td><td></td><td>Fermer le panneau terminal.</td></tr>
+<tr data-k="session.terminal"><td><b>New terminal</b><br><span class="id">session.terminal</span></td><td><span class="cat">aucun</span></td><td><code>/terminal</code></td><td>Ouvrir un nouveau terminal intégré (aussi /terminal).</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Visionneuse de diff <span class="cat">(20)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="diff.open"><td><b>Open diff viewer</b><br><span class="id">diff.open</span></td><td><span class="cat">aucun</span></td><td><code>/diff</code></td><td>Ouvrir la visionneuse de modifications (diff) des fichiers (aussi /diff). Plus utile dans un dossier Git.</td></tr>
+<tr data-k="diff.close"><td><b>Close diff viewer</b><br><span class="id">diff.close</span></td><td><kbd>Esc</kbd> <span class='cat'>ou</span> <kbd>Q</kbd></td><td></td><td>Fermer la visionneuse de diff.</td></tr>
+<tr data-k="diff.down"><td><b>Move diff viewer down</b><br><span class="id">diff.down</span></td><td><kbd>J</kbd> <span class='cat'>ou</span> <kbd>↓</kbd></td><td></td><td>Descendre d&#x27;une ligne dans le diff.</td></tr>
+<tr data-k="diff.up"><td><b>Move diff viewer up</b><br><span class="id">diff.up</span></td><td><kbd>K</kbd> <span class='cat'>ou</span> <kbd>↑</kbd></td><td></td><td>Monter d&#x27;une ligne dans le diff.</td></tr>
+<tr data-k="diff.page.down"><td><b>Page diff viewer down</b><br><span class="id">diff.page.down</span></td><td><kbd>PgDn</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>F</kbd></td><td></td><td>Descendre d&#x27;une page dans le diff.</td></tr>
+<tr data-k="diff.page.up"><td><b>Page diff viewer up</b><br><span class="id">diff.page.up</span></td><td><kbd>PgUp</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>B</kbd></td><td></td><td>Monter d&#x27;une page dans le diff.</td></tr>
+<tr data-k="diff.half_page.down"><td><b>Scroll down half a page</b><br><span class="id">diff.half_page.down</span></td><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td></td><td>Descendre d&#x27;une demi-page dans le diff.</td></tr>
+<tr data-k="diff.half_page.up"><td><b>Scroll up half a page</b><br><span class="id">diff.half_page.up</span></td><td><kbd>Ctrl</kbd>+<kbd>U</kbd></td><td></td><td>Monter d&#x27;une demi-page dans le diff.</td></tr>
+<tr data-k="diff.first"><td><b>Go to the start of the diff</b><br><span class="id">diff.first</span></td><td><kbd>gg</kbd> <span class='cat'>ou</span> <kbd>Début</kbd></td><td></td><td>Aller au début du diff.</td></tr>
+<tr data-k="diff.last"><td><b>Go to the end of the diff</b><br><span class="id">diff.last</span></td><td><kbd>Shift</kbd>+<kbd>G</kbd> <span class='cat'>ou</span> <kbd>Fin</kbd></td><td></td><td>Aller à la fin du diff.</td></tr>
+<tr data-k="diff.next_hunk"><td><b>Jump to next diff hunk</b><br><span class="id">diff.next_hunk</span></td><td><kbd>]</kbd></td><td></td><td>Aller au bloc de modification suivant (« hunk »).</td></tr>
+<tr data-k="diff.previous_hunk"><td><b>Jump to previous diff hunk</b><br><span class="id">diff.previous_hunk</span></td><td><kbd>[</kbd></td><td></td><td>Aller au bloc de modification précédent.</td></tr>
+<tr data-k="diff.next_file"><td><b>Jump to next diff file</b><br><span class="id">diff.next_file</span></td><td><kbd>N</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>↓</kbd></td><td></td><td>Fichier modifié suivant.</td></tr>
+<tr data-k="diff.previous_file"><td><b>Jump to previous diff file</b><br><span class="id">diff.previous_file</span></td><td><kbd>P</kbd> <span class='cat'>ou</span> <kbd>Alt</kbd>+<kbd>↑</kbd></td><td></td><td>Fichier modifié précédent.</td></tr>
+<tr data-k="diff.toggle_file_tree"><td><b>Toggle diff viewer file tree</b><br><span class="id">diff.toggle_file_tree</span></td><td><kbd>B</kbd></td><td></td><td>Afficher/masquer l&#x27;arbre des fichiers à gauche du diff.</td></tr>
+<tr data-k="diff.single_patch"><td><b>Toggle single patch view</b><br><span class="id">diff.single_patch</span></td><td><kbd>S</kbd></td><td></td><td>Afficher un seul fichier à la fois, ou tous à la suite.</td></tr>
+<tr data-k="diff.switch_source"><td><b>Switch diff viewer source</b><br><span class="id">diff.switch_source</span></td><td><kbd>D</kbd></td><td></td><td>Choisir ce qu&#x27;on compare : tout, déjà enregistré (committed), en cours (uncommitted) ou le dernier tour de l&#x27;agent (Last turn).</td></tr>
+<tr data-k="diff.toggle_view"><td><b>Toggle diff viewer split or unified view</b><br><span class="id">diff.toggle_view</span></td><td><kbd>V</kbd></td><td></td><td>Diff côte à côte (split) ou à la suite (unified).</td></tr>
+<tr data-k="diff.mark_reviewed"><td><b>Toggle selected diff file reviewed</b><br><span class="id">diff.mark_reviewed</span></td><td><kbd>M</kbd></td><td></td><td>Marquer un fichier comme relu (il se replie).</td></tr>
+<tr data-k="diff.help"><td><b>Show more diff viewer shortcuts</b><br><span class="id">diff.help</span></td><td><kbd>?</kbd> <span class='cat'>ou</span> <kbd>Shift</kbd>+<kbd>?</kbd> <span class='cat'>ou</span> <kbd>Shift</kbd>+<kbd>/</kbd></td><td></td><td>Afficher les autres raccourcis de la visionneuse de diff.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Which-Key (aide aux raccourcis) <span class="cat">(11)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="which-key.toggle"><td><b>Toggle which-key panel</b><br><span class="id">which-key.toggle</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>K</kbd></td><td></td><td>Afficher le panneau which-key : tous les raccourcis disponibles là où tu es.</td></tr>
+<tr data-k="which-key.layout.toggle"><td><b>Switch which-key layout</b><br><span class="id">which-key.layout.toggle</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd></td><td></td><td>Changer la disposition du panneau which-key.</td></tr>
+<tr data-k="which-key.pending.toggle"><td><b>Toggle which-key pending preview</b><br><span class="id">which-key.pending.toggle</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td><td></td><td>Aperçu des suites possibles après un début de raccourci (ex. après Ctrl+X).</td></tr>
+<tr data-k="which-key.group.previous"><td><b>Previous which-key group</b><br><span class="id">which-key.group.previous</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>←</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>[</kbd></td><td></td><td>Groupe de raccourcis précédent dans which-key.</td></tr>
+<tr data-k="which-key.group.next"><td><b>Next which-key group</b><br><span class="id">which-key.group.next</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>→</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>]</kbd></td><td></td><td>Groupe suivant dans which-key.</td></tr>
+<tr data-k="which-key.scroll.up"><td><b>Scroll which-key up</b><br><span class="id">which-key.scroll.up</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>↑</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>P</kbd></td><td></td><td>Faire défiler which-key vers le haut.</td></tr>
+<tr data-k="which-key.scroll.down"><td><b>Scroll which-key down</b><br><span class="id">which-key.scroll.down</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>↓</kbd> <span class='cat'>ou</span> <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd></td><td></td><td>Faire défiler which-key vers le bas.</td></tr>
+<tr data-k="which-key.page.up"><td><b>Page which-key up</b><br><span class="id">which-key.page.up</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>PgUp</kbd></td><td></td><td>Page précédente de which-key.</td></tr>
+<tr data-k="which-key.page.down"><td><b>Page which-key down</b><br><span class="id">which-key.page.down</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>PgDn</kbd></td><td></td><td>Page suivante de which-key.</td></tr>
+<tr data-k="which-key.home"><td><b>Jump to first which-key binding</b><br><span class="id">which-key.home</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Début</kbd></td><td></td><td>Premier raccourci de which-key.</td></tr>
+<tr data-k="which-key.end"><td><b>Jump to last which-key binding On this page Application Mini Diff Viewer Appearance And Navigation Sessions Models And Agents Session Navigation Prompt Commands Input Editing Composer Dialogs And Autocomplete Terminal And Plugins Which-Key</b><br><span class="id">which-key.end</span></td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fin</kbd></td><td></td><td>Dernier raccourci de which-key.</td></tr>
+</table></div>
+<div class="carte tableau"><h3>Menus et divers <span class="cat">(2)</span></h3><table><tr><th>Nom (OpenCode)</th><th>Raccourci</th><th>Commande</th><th>À quoi ça sert</th></tr>
+<tr data-k="location.copy"><td><b>Copy path</b><br><span class="id">location.copy</span></td><td><span class="cat">aucun</span></td><td></td><td>Copier le chemin du dossier (menu des projets).</td></tr>
+<tr data-k="location.open"><td><b>Open folder</b><br><span class="id">location.open</span></td><td><span class="cat">aucun</span></td><td></td><td>Ouvrir le dossier dans l&#x27;Explorateur (menu des projets).</td></tr>
+</table></div>
+</section>
+
+<!-- ============================ PIEGES ============================ -->
+<section id="pieges">
+  <div class="astuce"><b>🔒 Seuls tes modèles locaux sont visibles.</b> OpenCode propose normalement aussi des modèles gratuits <b>en ligne</b> (<code>opencode/big-pickle</code>, <code>…-free</code>) : ils sont <b>masqués</b> chez toi (règle <code>policies</code> dans <code>opencode.json</code> : tout fournisseur refusé sauf <code>ia-locale</code>). <code>/models</code> ne montre donc que tes modèles locaux : <code>ia-locale/agent</code>, <code>ia-locale/code</code> et <code>ia-locale/heretic</code>. Même un fournisseur ajouté par <code>/connect</code> resterait bloqué.</div>
+  <div class="grille">
+    <div class="carte"><h3>✅ Bonnes habitudes</h3>
+      <ul>
+        <li>Une session par étape, avec un nom clair.</li>
+        <li>Profil <code>Plan</code> d'abord pour les grosses missions.</li>
+        <li><code>/undo</code> si le résultat ne te plaît pas : il annule aussi les fichiers.</li>
+        <li><code>/compact</code> ou nouvelle session quand <i>Context</i> dépasse 70 %.</li>
+        <li>Lis chaque commande avant de dire « Allow ».</li>
+      </ul>
+    </div>
+    <div class="carte"><h3>🚫 À éviter</h3>
+      <ul>
+        <li><b>Permissions → auto accept</b> sans avoir lu ce qu'il implique (onglet Settings) : il ne te demandera plus rien.</li>
+        <li>« Allow always » sur une commande qui supprime ou installe.</li>
+        <li><code>/connect</code>, <code>/pair --remote</code>, <code>/plugins</code> sans savoir ce que c'est.</li>
+        <li><code>/cd</code> vers un dossier hors de <code>D:\IA LOCAL</code>.</li>
+        <li><code>/update</code> : demande plutôt à Claude (installation portable particulière).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="carte tableau">
+    <h3>Quand il te demande une permission</h3>
+    <table>
+      <tr><th>Choix</th><th>Effet</th></tr>
+      <tr><td><b>Allow once</b></td><td>Autorise <b>cette</b> commande seulement <span class="badge ok">conseillé</span></td></tr>
+      <tr><td><b>Allow always</b></td><td>Autorise ce type de commande pour la suite du projet (sans redemander)</td></tr>
+      <tr><td><b>Reject</b></td><td>Refuse (et annule les autres demandes en attente)</td></tr>
+    </table>
+  </div>
+  <div class="carte">
+    <h3>Ça bloque ?</h3>
+    <table>
+      <tr><td>Il ne répond plus</td><td><kbd>Esc</kbd>, puis réessaie. Le 1<sup>er</sup> message après une pause prend ~10 s (rechargement du modèle).</td></tr>
+      <tr><td>MCP « Failed » dans la sidebar</td><td><code>/mcps</code> pour le reconnecter.</td></tr>
+      <tr><td>Config modifiée</td><td><code>/reload</code> ou quitter/relancer.</td></tr>
+      <tr><td>Tout est lent</td><td>Ferme les jeux (VRAM), ou <kbd>F2</kbd> pour passer sur le modèle <code>code</code> (plus rapide).</td></tr>
+    </table>
+  </div>
+  <p class="sous">Voir aussi : <code>Guide de l'agent.html</code> (ton installation) · doc officielle : opencode.ai/v2/docs/cli/tui</p>
+</section>
+</main>
+<script>
+document.querySelectorAll('.onglets button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.onglets button,section').forEach(e=>e.classList.remove('actif'));
+  b.classList.add('actif');document.getElementById(b.dataset.o).classList.add('actif');
+  try{localStorage.setItem('wiki-onglet',b.dataset.o)}catch(e){}
+}));
+try{const o=localStorage.getItem('wiki-onglet');if(o){const b=document.querySelector('[data-o="'+o+'"]');if(b)b.click()}}catch(e){}
+
+
+// ---------- Recherche globale ----------
+(function(){
+  const champ=document.getElementById('recherche'), compteur=document.getElementById('compteur');
+  const secs=[...document.querySelectorAll('main section')];
+  const libelles={};document.querySelectorAll('.onglets button').forEach(b=>libelles[b.dataset.o]=b.textContent.trim());
+  secs.forEach(s=>{const t=document.createElement('h2');t.className='titre-recherche';t.textContent=libelles[s.id]||s.id;s.prepend(t);});
+  const sansAccent=c=>c.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const norm=s=>[...s].map(sansAccent).join('');
+  function unites(sec){
+    const u=[];
+    sec.querySelectorAll('tr').forEach(tr=>{ if(!tr.querySelector('th')) u.push(tr); });
+    sec.querySelectorAll('li, .note, .astuce, .danger, .ecran').forEach(x=>u.push(x));
+    sec.querySelectorAll('.carte').forEach(c=>{ if(!c.querySelector('table, li')) u.push(c); else c.querySelectorAll(':scope > p').forEach(p=>u.push(p)); });
+    return u;
+  }
+  function nettoyer(){
+    document.querySelectorAll('mark').forEach(m=>{const t=document.createTextNode(m.textContent);m.replaceWith(t);t.parentNode.normalize();});
+    document.querySelectorAll('.masque').forEach(x=>x.classList.remove('masque'));
+    secs.forEach(s=>s.classList.remove('vide'));
+  }
+  function surligner(el,mots){
+    const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null);const noeuds=[];
+    while(w.nextNode())noeuds.push(w.currentNode);
+    noeuds.forEach(n=>{
+      const txt=n.nodeValue, low=norm(txt); const plages=[];
+      mots.forEach(m=>{let i=0;while((i=low.indexOf(m,i))>=0){plages.push([i,i+m.length]);i+=m.length;}});
+      if(!plages.length)return; plages.sort((a,b)=>a[0]-b[0]);
+      const frag=document.createDocumentFragment();let pos=0;
+      plages.forEach(([a,b])=>{if(a<pos)return;frag.append(txt.slice(pos,a));const mk=document.createElement('mark');mk.textContent=txt.slice(a,b);frag.append(mk);pos=b;});
+      frag.append(txt.slice(pos));n.replaceWith(frag);
+    });
+  }
+  let minuterie;
+  function chercher(){
+    nettoyer();
+    const q=norm(champ.value.trim());
+    if(q.length<2){document.body.classList.remove('cherche');compteur.textContent='';return;}
+    document.body.classList.add('cherche');
+    const mots=q.split(/\s+/).filter(Boolean); let total=0;
+    secs.forEach(sec=>{
+      let n=0;
+      unites(sec).forEach(u=>{
+        const cat=u.querySelector && u.querySelector('td.cat[colspan]');
+        const texte=norm(u.textContent+' '+(u.dataset?u.dataset.k||'':''));
+        const ok=!cat && mots.every(m=>texte.includes(m));
+        if(ok){n++;surligner(u,mots);} else u.classList.add('masque');
+      });
+      sec.querySelectorAll('.carte, .grille, table').forEach(c=>{
+        const vis=[...c.querySelectorAll('tr:not(.masque), li:not(.masque), p:not(.masque), .note:not(.masque), .astuce:not(.masque)')].filter(x=>!x.querySelector('th'));
+        const lui=!c.classList.contains('masque');
+        if(c.matches('.carte') && !c.querySelector('table, li') ) return;
+        if(!vis.length) c.classList.add('masque');
+      });
+      sec.querySelectorAll('h3').forEach(h=>{const c=h.closest('.carte');if(c&&c.classList.contains('masque'))return;});
+      if(!n) sec.classList.add('vide'); total+=n;
+    });
+    compteur.textContent= total? total+' résultat'+(total>1?'s':'')+' — efface la recherche pour revenir aux onglets' : 'Aucun résultat. Essaie un mot anglais (ex. « copy », « tab ») ou français.';
+  }
+  try{const q=new URLSearchParams(location.search).get('q');if(q){champ.value=q;chercher();}}catch(e){}
+  champ.addEventListener('input',()=>{clearTimeout(minuterie);minuterie=setTimeout(chercher,150);});
+  document.addEventListener('keydown',ev=>{ if(ev.key==='/'&&document.activeElement!==champ){ev.preventDefault();champ.focus();} if(ev.key==='Escape'&&document.activeElement===champ){champ.value='';chercher();} });
+})();
+
+const r=document.documentElement;
+try{const t=localStorage.getItem('theme');if(t)r.dataset.theme=t}catch(e){}
+document.getElementById('theme').addEventListener('click',()=>{
+  const sombre=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme=sombre?'light':'dark';try{localStorage.setItem('theme',r.dataset.theme)}catch(e){}
+});
+</script>
+</body>
+</html>

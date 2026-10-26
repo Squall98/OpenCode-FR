@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide de l'Atelier</title>
+<style>
+:root{--fond:#0a0a0a;--surface:#141414;--surface2:#1b1b1b;--bord:#262626;--texte:#ececec;--doux:#9a9a9a;--acc:#4f8cff;--acc-f:#14223d;--ok:#3fb950;--ok-f:#10261a;--att:#d29922;--att-f:#2b2110;--non:#f85149;--non-f:#2d1214}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--fond:#f6f6f6;--surface:#fff;--surface2:#f2f2f2;--bord:#e1e1e1;--texte:#161616;--doux:#5c5c5c;--acc:#2563eb;--acc-f:#e6eefe;--ok:#1a7f37;--ok-f:#e6f4ea;--att:#9a6700;--att-f:#fff4d6;--non:#cf222e;--non-f:#ffebe9}}
+:root[data-theme="light"]{--fond:#f6f6f6;--surface:#fff;--surface2:#f2f2f2;--bord:#e1e1e1;--texte:#161616;--doux:#5c5c5c;--acc:#2563eb;--acc-f:#e6eefe;--ok:#1a7f37;--ok-f:#e6f4ea;--att:#9a6700;--att-f:#fff4d6;--non:#cf222e;--non-f:#ffebe9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);font:15px/1.6 Inter,"Segoe UI",system-ui,sans-serif}
+header{max-width:1080px;margin:0 auto;padding:26px 16px 6px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+h1{margin:0;font-size:25px}header p{margin:4px 0 0;color:var(--doux)}
+#theme{background:var(--surface);color:var(--texte);border:1px solid var(--bord);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+nav{max-width:1080px;margin:10px auto 0;padding:0 16px;display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--bord)}
+nav button{background:none;border:0;border-bottom:3px solid transparent;color:var(--doux);padding:9px 11px;font:inherit;font-weight:600;cursor:pointer}
+nav button[aria-selected="true"]{color:var(--acc);border-bottom-color:var(--acc)}
+main{max-width:1080px;margin:0 auto;padding:18px 16px 60px}
+section{display:none}section.actif{display:block}
+h2{font-size:19px;margin:6px 0 10px}h3{font-size:15px;margin:22px 0 6px}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:14px 18px;margin:12px 0}
+.note{background:var(--acc-f);border-radius:10px;padding:10px 14px;margin:12px 0}
+.att{background:var(--att-f);border-radius:10px;padding:10px 14px;margin:12px 0}
+figure{margin:14px 0}figure img{width:100%;border:1px solid var(--bord);border-radius:10px;cursor:zoom-in;display:block}
+figcaption{color:var(--doux);font-size:13px;margin-top:6px}
+code{background:var(--surface2);border:1px solid var(--bord);border-radius:4px;padding:0 5px;font:13px Consolas,monospace}
+table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:7px 9px;border-top:1px solid var(--bord);vertical-align:top}th{color:var(--doux);font-size:13px;border-top:0}
+.b{display:inline-block;font-size:12px;border-radius:20px;padding:0 8px}.b.oui{background:var(--ok-f);color:var(--ok)}.b.dem{background:var(--att-f);color:var(--att)}.b.non{background:var(--non-f);color:var(--non)}
+ol li,ul li{margin-bottom:5px}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:9;cursor:zoom-out}
+#zoom img{max-width:96vw;max-height:94vh;border-radius:8px}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Guide de l'Atelier</h1><p>Le panneau qui règle votre agent OpenCode : agents, équipes, MCP, modèles, commandes, skills, sécurité.</p></div>
+  <button id="theme" type="button">Clair / sombre</button>
+</header>
+<nav role="tablist">
+  <button role="tab" data-o="debut" aria-selected="true">Premiers pas</button>
+  <button role="tab" data-o="agents">Agents</button>
+  <button role="tab" data-o="equipes">Équipes</button>
+  <button role="tab" data-o="mcp">MCP</button>
+  <button role="tab" data-o="modeles">Modèles et GPU</button>
+  <button role="tab" data-o="savoir">Commandes et skills</button>
+  <button role="tab" data-o="surete">Sécurité et sauvegardes</button>
+  <button role="tab" data-o="opencode">Dans OpenCode</button>
+  <button role="tab" data-o="panne">Si ça coince</button>
+</nav>
+<main>
+
+<section id="debut" class="actif">
+  <h2>Premiers pas</h2>
+  <div class="carte">
+    <b>Deux fenêtres, deux rôles</b>
+    <table>
+      <tr><th>Fenêtre</th><th>Raccourci du bureau</th><th>Sert à</th></tr>
+      <tr><td><b>L'agent</b></td><td>« Agent IA »</td><td>Discuter avec l'IA et lui confier des missions (comme avant).</td></tr>
+      <tr><td><b>L'Atelier</b></td><td>« Atelier de l'agent »</td><td>Régler l'agent : agents, équipes, MCP, modèles, commandes, skills, sécurité. On n'y discute pas.</td></tr>
+    </table>
+    <p>Les deux se parlent : l'agent a un bouton <b>Atelier</b> en bas de sa colonne de gauche, et l'Atelier recharge l'agent ouvert à chaque enregistrement.</p>
+    <p><b>Rien à régler avant</b> : au premier lancement, la fenêtre de l'agent se met d'elle-même en onglets verticaux (la colonne avec les boutons) et affiche le menu des agents.</p>
+  </div>
+  <div class="carte">
+    <b>Ouvrir l'Atelier</b>
+    <ul>
+      <li>Dans la fenêtre de l'agent : bouton <b>Atelier</b> en bas de la colonne de gauche.</li>
+      <li>Ou le raccourci du bureau <b>« Atelier de l'agent »</b>, même quand l'agent est fermé.</li>
+    </ul>
+    Il s'ouvre dans sa propre fenêtre. Fermer la fenêtre suffit : son petit serveur s'arrête tout seul quelques minutes plus tard.
+  </div>
+  <figure><img src="captures/01-vue-ensemble.jpg" alt="Vue d'ensemble de l'Atelier"><figcaption>La vue d'ensemble : agent et modèle par défaut, agents, MCP actifs, accès rapides, dernières modifications. En bas à gauche, l'état du GPU loué, de l'IA locale et de l'agent.</figcaption></figure>
+  <h3>Ce qui se passe quand vous cliquez « Enregistrer »</h3>
+  <ol>
+    <li>L'Atelier relit la config actuelle (si elle a changé ailleurs entre-temps, il vous demande de recharger la page).</li>
+    <li>Il fait <b>vérifier la nouvelle config par OpenCode lui-même</b>, sur une copie. Si OpenCode refuse, <b>rien n'est écrit</b> et l'Atelier vous dit quoi corriger.</li>
+    <li>Il <b>sauvegarde</b> l'ancienne version (les 20 dernières sont gardées).</li>
+    <li>Il écrit, puis <b>recharge l'agent ouvert</b> : la modification est active tout de suite, sans fermer l'agent. Si l'agent est fermé, elle le sera au prochain lancement.</li>
+  </ol>
+  <div class="note">Un bandeau orange « Mode test » en haut veut dire que vous réglez la copie d'essai (<code>_maintenance\OpenCode-web-test</code>), pas votre vrai agent.</div>
+</section>
+
+<section id="agents">
+  <h2>Agents</h2>
+  <p>Écran <b>Mes agents</b> : la liste à gauche, la fiche de l'agent choisi à droite. Chaque fiche commence par « À quoi il sert ».</p>
+  <table class="carte">
+    <tr><th>Groupe</th><th>Ce que c'est</th></tr>
+    <tr><td>Agents principaux</td><td>Ceux du menu des agents dans la discussion (Build, Plan, et les vôtres en rôle « Principal »).</td></tr>
+    <tr><td>Sous-agents</td><td>Appelés par un autre agent (chef d'équipe) pour une partie du travail.</td></tr>
+    <tr><td>Fournis par OpenCode</td><td>General et Explore : sous-agents d'origine, modifiables mais pas supprimables.</td></tr>
+    <tr><td>Internes</td><td>Compaction, Title, Summary : OpenCode s'en sert seul, rien à régler.</td></tr>
+  </table>
+  <figure><img src="captures/02-agent-plan.jpg" alt="Fiche de l'agent Plan"><figcaption>Fiche d'un agent d'origine (Plan) : son rôle expliqué, ses champs, et ses droits réels.</figcaption></figure>
+  <h3>Les champs</h3>
+  <ul>
+    <li><b>Nom</b> : identifiant en minuscules, chiffres et tirets (ex. <code>relecteur-web</code>).</li>
+    <li><b>Rôle</b> : Principal (dans le menu), Sous-agent (appelé par un chef), ou les deux.</li>
+    <li><b>Description</b> : affichée dans le menu des agents, et lue par un chef d'équipe pour choisir à qui confier une tâche.</li>
+    <li><b>Consignes</b> : ce que l'agent lit avant chaque tâche. Pour un agent d'origine, vide = consignes d'OpenCode.</li>
+    <li><b>Modèle</b> : « celui par défaut » ou un modèle précis (ex. le rapide pour les petites tâches).</li>
+  </ul>
+  <h3>Les droits</h3>
+  <p>Quatre interrupteurs : modifier des fichiers, lancer des commandes, aller sur internet, appeler des sous-agents. Chacun : <span class="b oui">Toujours</span> <span class="b dem">Sur demande</span> <span class="b non">Jamais</span>.</p>
+  <ul>
+    <li><b>hérité</b> : l'agent n'a pas de règle à lui, la valeur vient des règles générales (Sécurité) ou d'OpenCode.</li>
+    <li><b>personnalisé</b> : l'agent a des règles détaillées (ex. « commandes interdites sauf <code>ls</code> ») : voyez le <b>mode expert</b>, qui montre et permet d'éditer les règles exactes.</li>
+    <li>Les commandes sans risque (<code>ls</code>, <code>dir</code>, <code>git status</code>…) restent permises même « Sur demande ».</li>
+  </ul>
+  <h3>Autres boutons</h3>
+  <p><b>Dupliquer</b> (copie à modifier), <b>Mettre par défaut</b> (agent de chaque nouvelle session), <b>Supprimer</b> (vos agents seulement), case <b>désactiver</b> (retire l'agent du menu sans le supprimer).</p>
+  <figure><img src="captures/03-agent-equipe.jpg" alt="Fiche de l'agent equipe"><figcaption>Un chef d'équipe : son droit « Appeler des sous-agents » montre la liste exacte de ceux qu'il peut appeler.</figcaption></figure>
+  <h3>Bibliothèque de modèles</h3>
+  <p>69 agents prêts à l'emploi, classés par catégorie, avec recherche. <b>+ Ajouter</b> crée une copie dans Mes agents (en sous-agent) avec des consignes et des droits adaptés, à régler ensuite.</p>
+  <figure><img src="captures/05-bibliotheque.jpg" alt="Bibliothèque de modèles"><figcaption>Les étiquettes disent ce que l'agent a le droit de faire : lecture seule, modifier des fichiers, commandes, internet.</figcaption></figure>
+</section>
+
+<section id="equipes">
+  <h2>Équipes</h2>
+  <p>Une équipe = un <b>agent chef</b> qui reçoit votre demande, la découpe et la confie à ses <b>sous-agents</b>, en parallèle quand c'est possible, puis fait la synthèse.</p>
+  <ol>
+    <li>Écran <b>Équipes</b> : donnez un nom au chef (ex. <code>equipe-web</code>) et sa mission en une phrase.</li>
+    <li>Cochez ses sous-agents. Il manque un rôle ? Menu <b>« + Ajouter un rôle depuis la bibliothèque »</b> : il sera créé en même temps.</li>
+    <li>Relisez l'aperçu (« Ce que l'Atelier va écrire »), puis <b>Créer l'équipe</b>.</li>
+  </ol>
+  <figure><img src="captures/04-creer-equipe.jpg" alt="Créer une équipe"><figcaption>Le chef ne pourra appeler que les sous-agents cochés : tous les autres lui sont interdits.</figcaption></figure>
+  <div class="note">Le chef apparaît ensuite dans le menu des agents. Ses consignes générées restent modifiables dans Mes agents.</div>
+</section>
+
+<section id="mcp">
+  <h2>MCP</h2>
+  <p>Des modules qui ajoutent des outils à l'agent (REA, navigateur, recherche web…).</p>
+  <ul>
+    <li><b>Interrupteur</b> : activer / désactiver un MCP sans le retirer.</li>
+    <li><b>Tester</b> : démarre le MCP, vérifie qu'il répond et compte ses outils.</li>
+    <li><b>Modifier</b> : commande (programme sur la 1re ligne, un argument par ligne), dossier, délai de démarrage, variables.</li>
+    <li><b>Ajouter depuis vos MCP de C:\MCP</b> : la commande et les variables sont recopiées depuis la config de Claude Code, <b>sans jamais afficher les valeurs secrètes</b>.</li>
+  </ul>
+  <figure><img src="captures/06-mcp.jpg" alt="Écran MCP"><figcaption>En haut vos MCP branchés, en dessous ceux de C:\MCP qu'on peut ajouter en un clic.</figcaption></figure>
+  <div class="att">Les valeurs des variables (clés, jetons) ne reviennent jamais dans la page. Pour en changer une, tapez la nouvelle valeur ; un champ laissé vide garde l'ancienne.</div>
+</section>
+
+<section id="modeles">
+  <h2>Modèles et GPU</h2>
+  <ul>
+    <li><b>GPU loué RunPod</b> : allumé ou éteint, prix à l'heure, bouton <b>Arrêter le GPU</b> (le compteur s'arrête ; relance depuis RunPod).</li>
+    <li><b>IA locale</b> : prête ou arrêtée, et le modèle en mémoire.</li>
+    <li><b>Modèle par défaut</b> et <b>modèle de chaque agent</b> : un menu par agent.</li>
+  </ul>
+  <figure><img src="captures/07-modeles.jpg" alt="Modèles et GPU"><figcaption>La pastille en bas à gauche de l'Atelier (et celle de la fenêtre de l'agent) dit aussi si le GPU tourne.</figcaption></figure>
+</section>
+
+<section id="savoir">
+  <h2>Commandes / et skills</h2>
+  <div class="note"><b>La différence.</b> Une <b>commande /</b>, c'est <b>vous</b> qui la tapez (<code>/audit-site exemple.com</code>) : elle envoie un message préparé à l'agent choisi. Une <b>skill</b>, c'est une <b>fiche de méthode</b> que <b>l'agent</b> charge tout seul quand la tâche s'y prête — comme les skills de Claude Code.</div>
+  <h3>Créer une commande</h3>
+  <p>Nom (tapé après /), agent qui la reçoit, description, et le message. <code>$ARGUMENTS</code> est remplacé par ce que vous tapez après la commande.</p>
+  <figure><img src="captures/08-commandes.jpg" alt="Commandes"><figcaption>Une commande apparaît ensuite dans la liste « / » et la palette d'OpenCode.</figcaption></figure>
+  <h3>Créer une skill</h3>
+  <p>Nom, <b>description</b> (c'est elle que l'agent lit pour décider de charger la fiche : soyez précis), et le contenu en Markdown. La case « autoriser » est cochée par défaut : sans elle, vos règles empêchent les agents de la charger. « Mettre de côté » range la skill dans les sauvegardes, elle n'est jamais effacée.</p>
+  <figure><img src="captures/09-skills.jpg" alt="Skills"><figcaption>Les skills existantes : reverse-web et installer-outil.</figcaption></figure>
+  <h3>Consignes communes</h3>
+  <p>Le fichier <code>AGENTS.md</code>, lu par tous les agents au début de chaque session.</p>
+</section>
+
+<section id="surete">
+  <h2>Sécurité et sauvegardes</h2>
+  <h3>Sécurité</h3>
+  <p>Les règles valables pour tous les agents. <b>La dernière règle qui correspond gagne.</b> Les lignes 🔒 protègent l'installation (sortir du dossier, modifier config, opencode, .donnees, lire ou modifier _maintenance) : elles ne peuvent pas être retirées ici.</p>
+  <figure><img src="captures/10-securite.jpg" alt="Sécurité"><figcaption>En dessous des règles verrouillées : commandes permises sans demander, sites web, skills… modifiables.</figcaption></figure>
+  <h3>Sauvegardes</h3>
+  <p>Une copie est faite avant chaque enregistrement (config, consignes, skills). <b>Comparer</b> montre les différences avec la version actuelle, <b>Restaurer</b> revient à cette version (en sauvegardant l'actuelle avant).</p>
+  <figure><img src="captures/11-sauvegardes.jpg" alt="Sauvegardes"><figcaption>Les 20 dernières versions de chaque fichier sont gardées.</figcaption></figure>
+</section>
+
+<section id="opencode">
+  <h2>Dans la fenêtre de l'agent</h2>
+  <figure><img src="captures/opencode-colonne-et-agents.jpg" alt="Fenêtre de l'agent"><figcaption>En bas de la colonne : pastille d'état, Atelier, Paramètres, Aide. Dans la zone de saisie : le menu des agents avec leur description, et le « ? ».</figcaption></figure>
+  <ul>
+    <li><b>Pastille</b> : GPU loué allumé/éteint et IA locale. Un clic ouvre l'écran Modèles de l'Atelier.</li>
+    <li><b>Atelier</b>, <b>Paramètres</b>, <b>Aide</b> : toujours accessibles, même dans une discussion.</li>
+    <li><b>Menu des agents</b> : la description de chaque agent sous son nom.</li>
+    <li><b>« ? »</b> à côté du menu : ouvre la fiche de l'agent choisi dans l'Atelier.</li>
+  </ul>
+  <div class="att">La colonne n'existe qu'avec les onglets <b>verticaux</b>, le réglage choisi d'office au premier lancement. Si vous repassez en onglets horizontaux, la colonne disparaît : pour la retrouver, <b>Paramètres → Général → Apparence → Onglets → Verticale</b>. De même, le menu des agents se règle dans <b>Paramètres → Général → Agents personnalisés</b>.</div>
+</section>
+
+<section id="panne">
+  <h2>Si ça coince</h2>
+  <table class="carte">
+    <tr><th>Vous voyez</th><th>Que faire</th></tr>
+    <tr><td>« Rien n'a été modifié » avec une liste « Ce qu'OpenCode a refusé »</td><td>La config n'a pas été touchée. Corrigez le champ indiqué (souvent un nom ou un modèle) et réenregistrez.</td></tr>
+    <tr><td>« La config a été modifiée ailleurs… »</td><td>Rechargez la page de l'Atelier (F5), puis refaites votre changement.</td></tr>
+    <tr><td>« Agent fermé : prise en compte au prochain lancement »</td><td>Normal si la fenêtre de l'agent est fermée.</td></tr>
+    <tr><td>L'agent se comporte bizarrement après un changement</td><td>Sauvegardes → Comparer pour voir ce qui a changé → Restaurer.</td></tr>
+    <tr><td>Pas de colonne ni de bouton Atelier dans la fenêtre de l'agent</td><td>Les onglets sont en horizontal (en haut de la fenêtre) : <b>Paramètres → Général → Apparence → Onglets → Verticale</b>. Sans colonne, l'Atelier s'ouvre aussi par son raccourci du bureau.</td></tr>
+    <tr><td>Le bouton Atelier ne fait rien</td><td>Double-clic sur <code>D:\IA LOCAL\_maintenance\Atelier-agent\Atelier.vbs</code> (ou le raccourci du bureau).</td></tr>
+    <tr><td>Après une mise à jour d'OpenCode, plus de boutons ni de français</td><td>Agent fermé, double-clic sur <code>_maintenance\OpenCode-francais\Patcher en français.cmd</code>. L'Atelier lui-même n'est pas touché par les mises à jour.</td></tr>
+  </table>
+</section>
+
+</main>
+<div id="zoom"><img alt=""></div>
+<script src="guide.js"></script>
+</body>
+</html>

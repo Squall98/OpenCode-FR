@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lexique OpenCode</title>
+<style>
+:root{
+  --fond:#f4f5f8;--carte:#fff;--texte:#1b2130;--doux:#5a6375;--bord:#e0e3ea;
+  --acc:#5b4bdb;--acc-f:#eeebff;--ok:#1d8a4b;--ok-f:#e4f5eb;--att:#b06400;--att-f:#fff2dc;
+  --code:#eef1f6;--kbd:#fbfbfd;--kbd-b:#c9cdd8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#10131a;--carte:#191d26;--texte:#e4e7ee;--doux:#9aa3b5;--bord:#2a3040;
+    --acc:#9d92ff;--acc-f:#25213f;--ok:#5fd08f;--ok-f:#16291f;--att:#f0b35a;--att-f:#2e2414;
+    --code:#222837;--kbd:#232a38;--kbd-b:#3a4256;
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#10131a;--carte:#191d26;--texte:#e4e7ee;--doux:#9aa3b5;--bord:#2a3040;
+  --acc:#9d92ff;--acc-f:#25213f;--ok:#5fd08f;--ok-f:#16291f;--att:#f0b35a;--att-f:#2e2414;
+  --code:#222837;--kbd:#232a38;--kbd-b:#3a4256;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);font:15px/1.55 "Segoe UI",system-ui,sans-serif}
+header{max-width:1000px;margin:0 auto;padding:28px 16px 8px;display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+h1{margin:0;font-size:26px}
+header p{margin:4px 0 0;color:var(--doux)}
+#theme{background:var(--carte);color:var(--texte);border:1px solid var(--bord);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+nav{max-width:1000px;margin:12px auto 0;padding:0 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--bord)}
+nav button{background:none;border:0;border-bottom:3px solid transparent;color:var(--doux);padding:10px 12px;font:inherit;font-weight:600;cursor:pointer}
+nav button[aria-selected="true"]{color:var(--acc);border-bottom-color:var(--acc)}
+main{max-width:1000px;margin:0 auto;padding:18px 16px 48px}
+section{display:none}
+section.actif{display:block}
+.recherche{width:100%;padding:10px 12px;border:1px solid var(--bord);border-radius:8px;background:var(--carte);color:var(--texte);font:inherit;margin-bottom:14px}
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.carte h2{margin:0 0 10px;font-size:17px}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.terme{background:var(--carte);border:1px solid var(--bord);border-radius:10px;padding:12px 14px}
+.terme b{display:block;font-size:15px}
+.terme .fr{color:var(--acc);font-weight:600}
+.terme p{margin:6px 0 0;color:var(--doux);font-size:14px}
+table{width:100%;border-collapse:collapse}
+td,th{text-align:left;padding:7px 8px;border-top:1px solid var(--bord);vertical-align:top}
+th{color:var(--doux);font-size:13px;font-weight:600;border-top:0}
+td:first-child{white-space:nowrap;width:1%}
+kbd{display:inline-block;background:var(--kbd);border:1px solid var(--kbd-b);border-bottom-width:2px;border-radius:5px;padding:0 6px;font:13px/1.6 Consolas,monospace;margin:1px 2px 1px 0}
+code{background:var(--code);border-radius:4px;padding:1px 5px;font:13px Consolas,monospace}
+.ou{color:var(--doux);font-size:12px;margin:0 3px}
+.note{background:var(--att-f);border-left:4px solid var(--att);border-radius:8px;padding:10px 14px;margin-bottom:14px}
+.astuce{background:var(--ok-f);border-left:4px solid var(--ok);border-radius:8px;padding:10px 14px;margin-bottom:14px}
+.cache{display:none}
+ol li{margin-bottom:6px}
+@media (max-width:600px){td:first-child{white-space:normal}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Lexique OpenCode</h1>
+    <p>Les mots et raccourcis de l'agent en version terminal (v2.0.29), traduits en français.</p>
+  </div>
+  <button id="theme" type="button">Mode sombre / clair</button>
+</header>
+<nav role="tablist">
+  <button role="tab" data-onglet="essentiel" aria-selected="true">L'essentiel</button>
+  <button role="tab" data-onglet="mots">Mots de l'interface</button>
+  <button role="tab" data-onglet="raccourcis">Tous les raccourcis</button>
+  <button role="tab" data-onglet="web">Version web en français</button>
+</nav>
+<main>
+
+<!-- L'ESSENTIEL -->
+<section id="essentiel" class="actif">
+  <div class="note"><b>Le terminal est maintenant en français</b> grâce au patch de <code>D:\IA LOCAL\_maintenance\OpenCode-francais</code>. Après une mise à jour d'OpenCode, relance <code>Patcher en français.cmd</code>. Les raccourcis restent les mêmes.</div>
+  <div class="astuce"><b>Touche « leader » = <kbd>Ctrl</kbd>+<kbd>X</kbd>.</b> Quand tu vois <code>&lt;leader&gt; N</code>, ça veut dire : appuie sur <kbd>Ctrl</kbd>+<kbd>X</kbd>, lâche, puis appuie sur <kbd>N</kbd>.</div>
+  <div class="carte">
+    <h2>Les 15 raccourcis à connaître</h2>
+    <table>
+      <tr><th>Touches</th><th>Ce que ça fait</th></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td><b>Palette de commandes</b> : la liste de tout ce qu'on peut faire, avec une recherche. Si tu oublies un raccourci, commence par là.</td></tr>
+      <tr><td><kbd>Entrée</kbd></td><td>Envoyer le message.</td></tr>
+      <tr><td><kbd>Maj</kbd>+<kbd>Entrée</kbd></td><td>Aller à la ligne sans envoyer.</td></tr>
+      <tr><td><kbd>Échap</kbd></td><td><b>Interrompre</b> l'agent pendant qu'il travaille.</td></tr>
+      <tr><td><kbd>Maj</kbd>+<kbd>Tab</kbd></td><td>Passer à l'agent suivant (ex. de <code>equipe</code> à un autre agent principal).</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>B</kbd></td><td><b>Mettre en arrière-plan</b> les outils qui bloquent (une commande longue, un sous-agent) : tu peux continuer à écrire pendant qu'ils tournent.</td></tr>
+      <tr><td><code>&lt;leader&gt;</code> <kbd>C</kbd></td><td><b>Compacter</b> la conversation (la résumer pour libérer de la place dans la mémoire du modèle).</td></tr>
+      <tr><td><code>&lt;leader&gt;</code> <kbd>N</kbd></td><td>Nouvelle conversation.</td></tr>
+      <tr><td><code>&lt;leader&gt;</code> <kbd>L</kbd></td><td>Liste de toutes les conversations.</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Conversations et projets récents.</td></tr>
+      <tr><td><code>&lt;leader&gt;</code> <kbd>M</kbd></td><td>Choisir le modèle.</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td>Dans la zone de texte : <b>aller au début de la ligne</b>. Dans la fenêtre des modèles : ouvrir la liste des fournisseurs.</td></tr>
+      <tr><td><kbd>↓</kbd> puis <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd></td><td><b>Sous-agents</b> : <kbd>↓</kbd> ouvre le sélecteur de sous-agents, <kbd>←</kbd> <kbd>→</kbd> passent de l'un à l'autre, <kbd>↑</kbd> revient à la conversation principale.</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>Tab</kbd></td><td>Onglet suivant (<kbd>Ctrl</kbd>+<kbd>1</kbd> à <kbd>9</kbd> pour aller direct à un onglet).</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>Vider la zone de texte. Quand elle est vide : <b>quitter</b> (aussi <code>&lt;leader&gt;</code> <kbd>Q</kbd>).</td></tr>
+    </table>
+  </div>
+  <div class="note"><b>Attention, même touche = sens différent selon l'endroit.</b> <kbd>Ctrl</kbd>+<kbd>D</kbd> efface un caractère dans la zone de texte, mais <b>supprime la conversation</b> dans la liste des conversations, et interrompt un sous-agent quand il est sélectionné. <kbd>Ctrl</kbd>+<kbd>F</kbd> avance le curseur quand tu écris, mais épingle une conversation dans la liste.</div>
+</section>
+
+<!-- MOTS -->
+<section id="mots">
+  <input class="recherche" type="search" placeholder="Chercher un mot (anglais ou français)…" data-filtre="#mots .terme">
+  <div class="grille">
+    <div class="terme"><b>Session</b><span class="fr">Conversation</span><p>Un échange avec l'agent, gardé dans l'historique.</p></div>
+    <div class="terme"><b>Prompt</b><span class="fr">Message / consigne</span><p>Ce que tu écris à l'agent. La « prompt box » est la zone de saisie en bas.</p></div>
+    <div class="terme"><b>Agent</b><span class="fr">Agent</span><p>Un rôle avec ses consignes et ses outils. Chez toi, l'agent principal est <code>equipe</code>.</p></div>
+    <div class="terme"><b>Subagent</b><span class="fr">Sous-agent</span><p>Un agent appelé par l'agent principal pour une sous-tâche (chez toi : analyste, codeur, debogueur, testeur). Il travaille dans sa propre conversation « enfant ».</p></div>
+    <div class="terme"><b>Child session / Parent session</b><span class="fr">Conversation enfant / parente</span><p>La conversation d'un sous-agent (enfant) et celle qui l'a lancé (parente).</p></div>
+    <div class="terme"><b>Background</b><span class="fr">Arrière-plan</span><p>Un outil ou un sous-agent qui continue de tourner sans te bloquer. <kbd>Ctrl</kbd>+<kbd>B</kbd> y envoie ce qui bloque.</p></div>
+    <div class="terme"><b>Compaction / Compact</b><span class="fr">Compactage / Compacter</span><p>Résumer automatiquement le début de la conversation quand la mémoire du modèle (le contexte) est presque pleine. Rien n'est supprimé de l'historique.</p></div>
+    <div class="terme"><b>Context</b><span class="fr">Contexte</span><p>Tout ce que le modèle « voit » à un moment donné : consignes, messages, fichiers lus. Il a une taille limite.</p></div>
+    <div class="terme"><b>Tokens</b><span class="fr">Jetons</span><p>Les morceaux de texte que compte le modèle (≈ ¾ d'un mot). La taille du contexte se mesure en jetons.</p></div>
+    <div class="terme"><b>Tab / Tabs</b><span class="fr">Onglet / Onglets</span><p>La barre qui permet de garder plusieurs conversations ouvertes et de passer de l'une à l'autre.</p></div>
+    <div class="terme"><b>Sidebar</b><span class="fr">Barre latérale</span><p>Le panneau sur le côté (fichiers modifiés, infos). <code>&lt;leader&gt;</code> <kbd>B</kbd> l'affiche ou le cache.</p></div>
+    <div class="terme"><b>Command palette</b><span class="fr">Palette de commandes</span><p>La liste de toutes les actions, ouverte avec <kbd>Ctrl</kbd>+<kbd>P</kbd>.</p></div>
+    <div class="terme"><b>Leader key</b><span class="fr">Touche leader</span><p><kbd>Ctrl</kbd>+<kbd>X</kbd> : la touche qu'on presse avant une lettre pour lancer un raccourci.</p></div>
+    <div class="terme"><b>Interrupt</b><span class="fr">Interrompre</span><p>Arrêter l'agent en plein travail (<kbd>Échap</kbd>).</p></div>
+    <div class="terme"><b>Queue / Queued prompt</b><span class="fr">File d'attente / Message en attente</span><p>Un message écrit pendant que l'agent travaille, envoyé quand il a fini. <code>&lt;leader&gt;</code> <kbd>Q</kbd> pour les gérer.</p></div>
+    <div class="terme"><b>Steer</b><span class="fr">Orienter</span><p>Envoyer ton message tout de suite pour corriger le travail en cours, au lieu de le mettre en attente.</p></div>
+    <div class="terme"><b>Aside</b><span class="fr">Question à part</span><p>Poser une petite question sans déranger le travail en cours.</p></div>
+    <div class="terme"><b>Stash</b><span class="fr">Mettre de côté</span><p>Garder un brouillon de message pour plus tard, puis le reprendre.</p></div>
+    <div class="terme"><b>Permission</b><span class="fr">Autorisation</span><p>L'agent te demande s'il peut faire une action (lancer une commande, modifier un fichier). <i>Allow</i> = autoriser, <i>Deny</i> = refuser, <i>Always</i> = toujours.</p></div>
+    <div class="terme"><b>Tool / Tool call</b><span class="fr">Outil / Appel d'outil</span><p>Une action de l'agent : lire un fichier, chercher, lancer une commande, appeler un MCP…</p></div>
+    <div class="terme"><b>Shell</b><span class="fr">Terminal / commande</span><p>Une commande lancée par l'agent. Les commandes en cours se choisissent avec <kbd>↑</kbd> <kbd>↓</kbd> et s'arrêtent avec <kbd>Ctrl</kbd>+<kbd>D</kbd>.</p></div>
+    <div class="terme"><b>Thinking</b><span class="fr">Réflexion</span><p>Le raisonnement du modèle avant sa réponse, qu'on peut afficher ou masquer.</p></div>
+    <div class="terme"><b>Transcript / Timeline</b><span class="fr">Fil / Chronologie</span><p>Le déroulé des messages et des actions de la conversation (<code>&lt;leader&gt;</code> <kbd>G</kbd> pour la chronologie).</p></div>
+    <div class="terme"><b>Undo / Redo</b><span class="fr">Annuler / Rétablir</span><p>Sur un message (<code>&lt;leader&gt;</code> <kbd>U</kbd> / <kbd>R</kbd>), c'est annuler le dernier échange et ce qu'il a modifié.</p></div>
+    <div class="terme"><b>Fork</b><span class="fr">Bifurquer / Dupliquer</span><p>Repartir d'un message pour créer une nouvelle conversation à partir de là.</p></div>
+    <div class="terme"><b>Diff / Hunk</b><span class="fr">Différences / Bloc de modifications</span><p>L'affichage de ce qui a changé dans les fichiers (<code>/diff</code>). Un « hunk » est un bloc de lignes modifiées.</p></div>
+    <div class="terme"><b>Split / Unified view</b><span class="fr">Vue côte à côte / Vue unifiée</span><p>Deux façons d'afficher les différences (<kbd>V</kbd> dans le visualiseur).</p></div>
+    <div class="terme"><b>Last turn</b><span class="fr">Dernier tour</span><p>La dernière réponse de l'agent et tout ce qu'elle a fait.</p></div>
+    <div class="terme"><b>Worktree</b><span class="fr">Copie de travail (git)</span><p>Un dossier séparé du même dépôt git, pour travailler sans toucher à l'original.</p></div>
+    <div class="terme"><b>Provider</b><span class="fr">Fournisseur</span><p>Qui fournit le modèle. Chez toi : <code>runpod</code> (le GPU loué) et l'IA locale.</p></div>
+    <div class="terme"><b>Variant</b><span class="fr">Variante</span><p>Une version d'un modèle avec d'autres réglages (ex. plus ou moins de réflexion), changée avec <kbd>Ctrl</kbd>+<kbd>T</kbd>.</p></div>
+    <div class="terme"><b>Favorite</b><span class="fr">Favori</span><p>Un modèle marqué en favori (<kbd>Ctrl</kbd>+<kbd>F</kbd> dans la liste des modèles).</p></div>
+    <div class="terme"><b>MCP server</b><span class="fr">Serveur MCP</span><p>Un module qui donne des outils en plus à l'agent (REA, Playwright, Perplexity…).</p></div>
+    <div class="terme"><b>Skill</b><span class="fr">Compétence</span><p>Une fiche de méthode que l'agent peut charger pour une tâche précise.</p></div>
+    <div class="terme"><b>Plugin</b><span class="fr">Extension</span><p>Un ajout au logiciel lui-même (pas à l'agent).</p></div>
+    <div class="terme"><b>Pin</b><span class="fr">Épingler</span><p>Garder une conversation en haut de la liste.</p></div>
+    <div class="terme"><b>Unread</b><span class="fr">Non lu</span><p>Un onglet où l'agent a répondu sans que tu l'aies regardé.</p></div>
+    <div class="terme"><b>Status</b><span class="fr">État</span><p>L'état du serveur, des MCP et du modèle (<code>&lt;leader&gt;</code> <kbd>S</kbd>).</p></div>
+    <div class="terme"><b>Which-key</b><span class="fr">Aide aux raccourcis</span><p>Le panneau qui montre les touches possibles (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>K</kbd>).</p></div>
+    <div class="terme"><b>Highlights</b><span class="fr">Nouveautés</span><p>Les nouveautés affichées une fois après une mise à jour (<code>/highlights</code> pour les revoir).</p></div>
+    <div class="terme"><b>Pair / Pairing link</b><span class="fr">Appairer / Lien de connexion</span><p>Le lien à usage unique qui connecte un navigateur au serveur (le lanceur web s'en occupe).</p></div>
+    <div class="terme"><b>Done / Error / Question</b><span class="fr">Terminé / Erreur / Question</span><p>Les alertes (son, notification) quand l'agent a fini, plante ou attend ta réponse.</p></div>
+  </div>
+</section>
+
+<!-- TOUS LES RACCOURCIS -->
+<section id="raccourcis">
+  <input class="recherche" type="search" placeholder="Chercher un raccourci ou une action…" data-filtre="#raccourcis tr.r">
+  <div class="carte"><h2>Général</h2><table>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>X</kbd></td><td>Touche leader (à presser avant les raccourcis notés <code>&lt;leader&gt;</code>)</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>Palette de commandes</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>C</kbd> <span class="ou">ou</span> <kbd>Ctrl</kbd>+<kbd>D</kbd> <span class="ou">ou</span> <code>&lt;leader&gt;</code> <kbd>Q</kbd></td><td>Quitter (<kbd>Ctrl</kbd>+<kbd>C</kbd> vide d'abord la zone de texte)</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>S</kbd></td><td>État (serveur, MCP, modèle)</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>B</kbd></td><td>Afficher / cacher la barre latérale</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>T</kbd></td><td>Afficher / cacher le terminal intégré</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>E</kbd></td><td>Écrire le message dans un éditeur externe</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Mettre le programme en pause (suspendre le terminal)</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>K</kbd></td><td>Panneau d'aide aux raccourcis</td></tr>
+  </table></div>
+
+  <div class="carte"><h2>Conversations et onglets</h2><table>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>N</kbd></td><td>Nouvelle conversation</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>L</kbd></td><td>Liste des conversations</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Conversations et projets récents</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>Renommer la conversation</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>D</kbd> (dans la liste)</td><td><b>Supprimer</b> la conversation</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>F</kbd> (dans la liste)</td><td>Épingler / désépingler une conversation</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>X</kbd></td><td>Exporter la conversation dans un éditeur</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>G</kbd></td><td>Chronologie de la conversation</td></tr>
+    <tr class="r"><td><kbd>Échap</kbd></td><td>Interrompre l'agent</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>B</kbd></td><td>Envoyer en arrière-plan les outils qui bloquent</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>C</kbd></td><td>Compacter la conversation</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>Q</kbd></td><td>Gérer les messages en attente</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>U</kbd> / <kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>Sur un message en attente : le reprendre / le supprimer</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>Tab</kbd> <span class="ou">ou</span> <kbd>Alt</kbd>+<kbd>↓</kbd></td><td>Onglet suivant</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>Maj</kbd>+<kbd>Tab</kbd> <span class="ou">ou</span> <kbd>Alt</kbd>+<kbd>↑</kbd></td><td>Onglet précédent</td></tr>
+    <tr class="r"><td><kbd>Alt</kbd>+<kbd>Maj</kbd>+<kbd>↓</kbd> / <kbd>↑</kbd></td><td>Onglet non lu suivant / précédent</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>1</kbd> … <kbd>9</kbd>, <kbd>0</kbd></td><td>Aller à l'onglet 1 à 10 (aussi <code>&lt;leader&gt;</code> + chiffre)</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>W</kbd></td><td>Fermer l'onglet</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>Maj</kbd>+<kbd>T</kbd></td><td>Rouvrir le dernier onglet fermé</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>I</kbd></td><td>Avancer dans l'historique des onglets</td></tr>
+  </table></div>
+
+  <div class="carte"><h2>Sous-agents et commandes en cours</h2><table>
+    <tr class="r"><td><kbd>↓</kbd></td><td>Ouvrir / fermer le sélecteur de sous-agents</td></tr>
+    <tr class="r"><td><kbd>→</kbd> / <kbd>←</kbd></td><td>Conversation enfant suivante / précédente</td></tr>
+    <tr class="r"><td><kbd>↑</kbd></td><td>Revenir à la conversation parente</td></tr>
+    <tr class="r"><td><kbd>↑</kbd> <kbd>↓</kbd> puis <kbd>Entrée</kbd></td><td>Choisir un sous-agent (ou une commande) et l'ouvrir</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>D</kbd> (sur un sous-agent)</td><td>Interrompre ce sous-agent</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>D</kbd> (sur une commande)</td><td>Tuer la commande</td></tr>
+  </table></div>
+
+  <div class="carte"><h2>Modèles et agents</h2><table>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>M</kbd></td><td>Liste des modèles</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>A</kbd> (fenêtre des modèles)</td><td>Liste des fournisseurs</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>F</kbd> (fenêtre des modèles)</td><td>Mettre / retirer un modèle des favoris</td></tr>
+    <tr class="r"><td><kbd>F2</kbd> / <kbd>Maj</kbd>+<kbd>F2</kbd></td><td>Modèle récent suivant / précédent</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>T</kbd></td><td>Changer de variante du modèle</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>A</kbd></td><td>Liste des agents</td></tr>
+    <tr class="r"><td><kbd>Maj</kbd>+<kbd>Tab</kbd></td><td>Agent suivant</td></tr>
+  </table></div>
+
+  <div class="carte"><h2>Lire la conversation</h2><table>
+    <tr class="r"><td><kbd>Page↑</kbd> / <kbd>Page↓</kbd></td><td>Remonter / descendre d'une page</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>U</kbd> / <kbd>D</kbd></td><td>Remonter / descendre d'une demi-page</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Y</kbd> / <kbd>E</kbd></td><td>Remonter / descendre d'une ligne</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>G</kbd> <span class="ou">ou</span> <kbd>Début</kbd></td><td>Premier message</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>G</kbd> <span class="ou">ou</span> <kbd>Fin</kbd></td><td>Dernier message</td></tr>
+    <tr class="r"><td><kbd>Alt</kbd>+<kbd>Fin</kbd></td><td>Ton dernier message</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>Y</kbd></td><td>Copier un message</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>U</kbd> / <kbd>R</kbd></td><td>Annuler / rétablir un message (et ses modifications)</td></tr>
+  </table></div>
+
+  <div class="carte"><h2>Écrire un message</h2><table>
+    <tr class="r"><td><kbd>Entrée</kbd></td><td>Envoyer</td></tr>
+    <tr class="r"><td><kbd>Maj</kbd>+<kbd>Entrée</kbd> <span class="ou">ou</span> <kbd>Ctrl</kbd>+<kbd>J</kbd></td><td>Nouvelle ligne</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>Entrée</kbd></td><td>Mettre le message en attente</td></tr>
+    <tr class="r"><td><kbd>↑</kbd> / <kbd>↓</kbd> (zone vide)</td><td>Messages précédents / suivants de l'historique</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>V</kbd></td><td>Coller (texte ou image)</td></tr>
+    <tr class="r"><td><code>&lt;leader&gt;</code> <kbd>I</kbd></td><td>Voir les images jointes</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>A</kbd> / <kbd>Ctrl</kbd>+<kbd>E</kbd></td><td>Début / fin de la ligne</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>←</kbd> / <kbd>→</kbd></td><td>Mot précédent / suivant</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>W</kbd> <span class="ou">ou</span> <kbd>Ctrl</kbd>+<kbd>Retour arrière</kbd></td><td>Effacer le mot précédent</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>K</kbd> / <kbd>Ctrl</kbd>+<kbd>U</kbd></td><td>Effacer jusqu'à la fin / jusqu'au début de la ligne</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>Maj</kbd>+<kbd>D</kbd></td><td>Effacer la ligne</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>-</kbd> / <kbd>Ctrl</kbd>+<kbd>.</kbd></td><td>Annuler / rétablir la frappe</td></tr>
+    <tr class="r"><td><kbd>Tab</kbd></td><td>Compléter la suggestion (fichiers avec <code>@</code>, commandes avec <code>/</code>)</td></tr>
+    <tr class="r"><td><kbd>Échap</kbd></td><td>Cacher les suggestions</td></tr>
+  </table></div>
+
+  <div class="carte"><h2>Visualiseur de différences (<code>/diff</code>)</h2><table>
+    <tr class="r"><td><kbd>Échap</kbd> <span class="ou">ou</span> <kbd>Q</kbd></td><td>Fermer</td></tr>
+    <tr class="r"><td><kbd>J</kbd> / <kbd>K</kbd></td><td>Descendre / monter</td></tr>
+    <tr class="r"><td><kbd>]</kbd> / <kbd>[</kbd></td><td>Bloc de modifications suivant / précédent</td></tr>
+    <tr class="r"><td><kbd>N</kbd> / <kbd>P</kbd></td><td>Fichier suivant / précédent</td></tr>
+    <tr class="r"><td><kbd>B</kbd></td><td>Afficher / cacher l'arborescence des fichiers</td></tr>
+    <tr class="r"><td><kbd>V</kbd></td><td>Vue côte à côte / unifiée</td></tr>
+    <tr class="r"><td><kbd>D</kbd></td><td>Choisir quoi comparer (tout, dernier tour…)</td></tr>
+    <tr class="r"><td><kbd>M</kbd></td><td>Marquer le fichier comme relu</td></tr>
+    <tr class="r"><td><kbd>?</kbd></td><td>Tous les raccourcis du visualiseur</td></tr>
+  </table></div>
+
+  <div class="carte"><h2>Fenêtres et listes</h2><table>
+    <tr class="r"><td><kbd>↑</kbd> <kbd>↓</kbd> <span class="ou">ou</span> <kbd>Ctrl</kbd>+<kbd>P</kbd> / <kbd>N</kbd></td><td>Élément précédent / suivant</td></tr>
+    <tr class="r"><td><kbd>Entrée</kbd></td><td>Valider</td></tr>
+    <tr class="r"><td><kbd>Espace</kbd> (liste des MCP)</td><td>Activer / désactiver un serveur MCP</td></tr>
+    <tr class="r"><td><kbd>Ctrl</kbd>+<kbd>F</kbd> (demande d'autorisation)</td><td>Afficher la demande en plein écran</td></tr>
+  </table></div>
+</section>
+
+<!-- WEB -->
+<section id="web">
+  <div class="astuce">La version terminal n'existe qu'en anglais. La <b>version web</b>, elle, est traduite en français. Elle utilise les mêmes réglages, les mêmes agents et le même historique.</div>
+  <div class="carte">
+    <h2>Lancer la version web</h2>
+    <ol>
+      <li>Double-clique sur <code>D:\IA LOCAL\Lancer l'agent (web).cmd</code>.</li>
+      <li>Une petite fenêtre « OpenCode web » s'ouvre, réduite dans la barre des tâches : c'est le serveur. Ton navigateur s'ouvre ensuite tout seul, déjà connecté.</li>
+      <li>Pour arrêter : <b>ferme la fenêtre « OpenCode web »</b>.</li>
+    </ol>
+    <p>Le serveur n'écoute que sur ton PC (<code>127.0.0.1:4096</code>). Un nouveau mot de passe est tiré au hasard à chaque lancement. Si tu relances alors que le serveur tourne encore, la page se rouvre simplement.</p>
+  </div>
+  <div class="carte">
+    <h2>Mettre l'interface en français</h2>
+    <p>Elle suit la langue de ton navigateur, donc elle est normalement déjà en français. Sinon :</p>
+    <ol>
+      <li>En bas à gauche, clique sur <b>Settings</b> (Paramètres).</li>
+      <li><b>Preferences → General → Language</b> (Préférences → Général → Langue).</li>
+      <li>Choisis <b>Français</b>.</li>
+    </ol>
+  </div>
+  <div class="note">Dans les mêmes Préférences, l'option <b>« Agents personnalisés : afficher le sélecteur d'agent dans la zone de saisie »</b> permet de choisir <code>equipe</code> ou un autre agent directement sous la zone de texte.</div>
+</section>
+
+</main>
+<script>
+(function(){
+  var racine=document.documentElement;
+  try{var t=localStorage.getItem('lexique-theme');if(t)racine.dataset.theme=t;}catch(e){}
+  document.getElementById('theme').onclick=function(){
+    var sombre=racine.dataset.theme?racine.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    racine.dataset.theme=sombre?'light':'dark';
+    try{localStorage.setItem('lexique-theme',racine.dataset.theme);}catch(e){}
+  };
+  var onglets=document.querySelectorAll('nav button');
+  function ouvrir(id){
+    onglets.forEach(function(b){b.setAttribute('aria-selected',b.dataset.onglet===id);});
+    document.querySelectorAll('section').forEach(function(s){s.classList.toggle('actif',s.id===id);});
+    try{localStorage.setItem('lexique-onglet',id);}catch(e){}
+  }
+  onglets.forEach(function(b){b.onclick=function(){ouvrir(b.dataset.onglet);};});
+  try{var o=localStorage.getItem('lexique-onglet');if(o&&document.getElementById(o))ouvrir(o);}catch(e){}
+  document.querySelectorAll('.recherche').forEach(function(champ){
+    champ.oninput=function(){
+      var q=champ.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      document.querySelectorAll(champ.dataset.filtre).forEach(function(el){
+        var txt=el.textContent.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+        el.classList.toggle('cache',q&&txt.indexOf(q)<0);
+      });
+      if(champ.dataset.filtre.indexOf('tr.r')>=0){
+        document.querySelectorAll('#raccourcis .carte').forEach(function(c){
+          c.classList.toggle('cache',!c.querySelector('tr.r:not(.cache)'));
+        });
+      }
+    };
+  });
+})();
+</script>
+</body>
+</html>

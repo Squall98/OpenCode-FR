@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan de l'IA locale</title>
+<style>
+:root{
+  --fond:#f4f5f8;--carte:#fff;--texte:#1b2130;--doux:#5a6375;--bord:#e0e3ea;
+  --acc:#5b4bdb;--acc-f:#eeebff;--ok:#1d8a4b;--ok-f:#e4f5eb;--att:#b06400;--att-f:#fff2dc;
+  --moteur:#0f7c8a;--moteur-f:#e2f5f7;--code:#eef1f6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#10131a;--carte:#191d26;--texte:#e4e7ee;--doux:#9aa3b5;--bord:#2a3040;
+    --acc:#9d92ff;--acc-f:#25213f;--ok:#5fd08f;--ok-f:#16291f;--att:#f0b35a;--att-f:#2e2414;
+    --moteur:#56c8d6;--moteur-f:#14282c;--code:#222837;
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#10131a;--carte:#191d26;--texte:#e4e7ee;--doux:#9aa3b5;--bord:#2a3040;
+  --acc:#9d92ff;--acc-f:#25213f;--ok:#5fd08f;--ok-f:#16291f;--att:#f0b35a;--att-f:#2e2414;
+  --moteur:#56c8d6;--moteur-f:#14282c;--code:#222837;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);font:15px/1.55 "Segoe UI",system-ui,sans-serif}
+header{max-width:1000px;margin:0 auto;padding:28px 16px 8px;display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+h1{margin:0;font-size:26px}
+header p{margin:4px 0 0;color:var(--doux)}
+#theme{background:var(--carte);color:var(--texte);border:1px solid var(--bord);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+nav{max-width:1000px;margin:12px auto 0;padding:0 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--bord)}
+nav button{background:none;border:0;border-bottom:3px solid transparent;color:var(--doux);padding:10px 12px;font:inherit;font-weight:600;cursor:pointer}
+nav button[aria-selected="true"]{color:var(--acc);border-bottom-color:var(--acc)}
+main{max-width:1000px;margin:0 auto;padding:18px 16px 48px}
+section{display:none}
+section.actif{display:block}
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.carte h2{margin:0 0 10px;font-size:17px}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bloc{border-radius:12px;padding:16px 18px;border:1px solid var(--bord);background:var(--carte)}
+.bloc.agent{border-top:5px solid var(--acc)}
+.bloc.moteur{border-top:5px solid var(--moteur)}
+.bloc h2{margin:0 0 4px;font-size:18px}
+.bloc .chemin{font:13px Consolas,monospace;color:var(--doux);word-break:break-all}
+.bloc ul{margin:10px 0 0;padding-left:18px}
+.bloc li{margin-bottom:4px}
+.fleche{text-align:center;color:var(--doux);margin:10px 0;font-size:14px}
+table{width:100%;border-collapse:collapse}
+td,th{text-align:left;padding:8px;border-top:1px solid var(--bord);vertical-align:top}
+th{color:var(--doux);font-size:13px;font-weight:600;border-top:0}
+code{background:var(--code);border-radius:4px;padding:1px 5px;font:13px Consolas,monospace;word-break:break-all}
+a{color:var(--acc)}
+.note{background:var(--att-f);border-left:4px solid var(--att);border-radius:8px;padding:10px 14px;margin-bottom:14px}
+.astuce{background:var(--ok-f);border-left:4px solid var(--ok);border-radius:8px;padding:10px 14px;margin-bottom:14px}
+.pastille{display:inline-block;font-size:12px;font-weight:600;border-radius:20px;padding:1px 9px;margin-left:6px}
+.pastille.a{background:var(--acc-f);color:var(--acc)}
+.pastille.m{background:var(--moteur-f);color:var(--moteur)}
+ol li{margin-bottom:6px}
+@media (max-width:700px){.deux{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Plan de l'IA locale</h1>
+    <p>Ce qui est où, et quel raccourci fait quoi (mis à jour le 22/10/2026).</p>
+  </div>
+  <button id="theme" type="button">Mode sombre / clair</button>
+</header>
+<nav role="tablist">
+  <button role="tab" data-onglet="ensemble" aria-selected="true">Vue d'ensemble</button>
+  <button role="tab" data-onglet="raccourcis">Raccourcis</button>
+  <button role="tab" data-onglet="dossiers">Dossiers</button>
+  <button role="tab" data-onglet="maj">Après une mise à jour</button>
+</nav>
+<main>
+
+<section id="ensemble" class="actif">
+  <div class="deux">
+    <div class="bloc agent">
+      <h2>L'agent <span class="pastille a">ce que tu utilises</span></h2>
+      <div class="chemin"><a href="file:///D:/IA%20LOCAL/">D:\IA LOCAL</a></div>
+      <ul>
+        <li>OpenCode v2.0.29, <b>en français</b> (terminal et fenêtre)</li>
+        <li>Réglages, agents (<code>equipe</code>, analyste, codeur, debogueur, testeur), MCP (REA, Playwright, Perplexity)</li>
+        <li>Tes conversations et tes projets</li>
+        <li><code>_maintenance\</code> : patch français, environnement de test, GPU RunPod</li>
+      </ul>
+    </div>
+    <div class="bloc moteur">
+      <h2>Le moteur <span class="pastille m">ne pas déplacer</span></h2>
+      <div class="chemin"><a href="file:///D:/IA-et-outils/IA-locale/">D:\IA-et-outils\IA-locale</a></div>
+      <ul>
+        <li>llama.cpp + llama-swap sur <code>127.0.0.1:8090</code></li>
+        <li>Les modèles GGUF (≈ 74 Go)</li>
+        <li>Sert aussi à Claude (MCP <code>ia-locale</code>)</li>
+        <li>Démarré tout seul par les lanceurs de l'agent</li>
+      </ul>
+    </div>
+  </div>
+  <div class="fleche">L'agent utilise soit le <b>moteur local</b> (RTX 5090), soit le <b>GPU loué RunPod</b> (Qwen 27B Heretic, par défaut).</div>
+  <div class="note"><b>Pourquoi deux dossiers ?</b> Ils n'ont pas le même rôle. Déplacer <code>D:\IA LOCAL</code> ferait perdre la liste de tes conversations (OpenCode les range selon ce chemin). Le moteur est partagé avec Claude et pèse 76 Go. Les deux restent donc où ils sont, et tout le reste a été regroupé autour de l'agent.</div>
+</section>
+
+<section id="raccourcis">
+  <div class="carte">
+    <h2>Sur le bureau</h2>
+    <table>
+      <tr><th>Raccourci</th><th>Ce qu'il fait</th></tr>
+      <tr><td><b>Agent IA</b></td><td><b>Le plus pratique.</b> Ouvre l'agent dans sa propre fenêtre, en français, avec la liste des conversations et le choix du modèle. Fermer la fenêtre arrête tout.</td></tr>
+      <tr><td><b>IA locale (agent)</b></td><td>La version terminal, avec le menu des conversations au démarrage.</td></tr>
+      <tr><td><b>Atelier de l'agent</b></td><td>Le panneau de gestion : agents, équipes, bibliothèque de modèles, MCP, modèles et GPU, commandes /, skills, sécurité, sauvegardes. Aussi depuis le bouton <b>Atelier</b> de la fenêtre de l'agent. Guide : <code>_maintenance\Atelier-agent\guide\index.html</code>.</td></tr>
+      <tr><td><b>Stop GPU</b></td><td>Arrête le GPU loué RunPod (pour ne plus payer). Aussi dans l'Atelier, écran Modèles et GPU.</td></tr>
+    </table>
+  </div>
+  <div class="carte">
+    <h2>Dans <a href="file:///D:/IA%20LOCAL/">D:\IA LOCAL</a></h2>
+    <table>
+      <tr><th>Fichier</th><th>Rôle</th></tr>
+      <tr><td><code>Agent IA (fenêtre).vbs</code></td><td>Ce que lance le raccourci « Agent IA » (script : <code>config\fenetre-agent.ps1</code>)</td></tr>
+      <tr><td><code>Lancer l'agent.cmd</code></td><td>Version terminal (raccourci « IA locale (agent) »)</td></tr>
+      <tr><td><code>Lancer l'agent (web).cmd</code></td><td>Même chose que la fenêtre, mais dans ton navigateur habituel</td></tr>
+      <tr><td><code>Ouvrir Chrome d'analyse.cmd</code></td><td>Chrome dédié pour faire analyser un site par l'agent</td></tr>
+      <tr><td><a href="Guide%20de%20l'agent.html">Guide de l'agent.html</a></td><td>Guide illustré</td></tr>
+      <tr><td><a href="Wiki%20OpenCode.html">Wiki OpenCode.html</a></td><td>Mode d'emploi de l'interface</td></tr>
+      <tr><td><a href="Lexique%20OpenCode.html">Lexique OpenCode.html</a></td><td>Mots et raccourcis clavier traduits</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="dossiers">
+  <div class="carte">
+    <h2>L'agent : <a href="file:///D:/IA%20LOCAL/">D:\IA LOCAL</a></h2>
+    <table>
+      <tr><th>Dossier</th><th>Contenu</th></tr>
+      <tr><td><code>config\</code></td><td>Réglages (<code>opencode\opencode.json</code>, consignes <code>AGENTS.md</code>, skills) et scripts des lanceurs</td></tr>
+      <tr><td><code>opencode\</code></td><td>Le programme OpenCode (exe patché en français)</td></tr>
+      <tr><td><code>projets\</code></td><td>Une mission = un dossier. <code>_vrac\</code> : les fichiers qui traînaient à la racine (captures, <code>test.wvd</code>)</td></tr>
+      <tr><td><code>outils\</code></td><td>Outils que l'agent installe lui-même</td></tr>
+      <tr><td><code>.donnees\</code></td><td>Conversations, cache, profils navigateur. <b>Ne pas toucher.</b></td></tr>
+      <tr><td><code>.playwright-mcp\</code></td><td>Fichiers du MCP Playwright</td></tr>
+      <tr><td><a href="file:///D:/IA%20LOCAL/_maintenance/"><code>_maintenance\</code></a></td><td>Outils de maintenance :
+        <br>• <code>OpenCode-francais\</code> : <code>Patcher en français.cmd</code>, <code>Restaurer l'original.cmd</code>, sauvegarde de l'exe officiel
+        <br>• <code>OpenCode-web-test\</code> : copie d'OpenCode à données vides, pour les essais
+        <br>• <code>RunPod-GPU\</code> : création et arrêt du GPU loué (clé dans <code>.env</code>)</td></tr>
+    </table>
+  </div>
+  <div class="carte">
+    <h2>Le moteur : <a href="file:///D:/IA-et-outils/IA-locale/">D:\IA-et-outils\IA-locale</a></h2>
+    <table>
+      <tr><td><code>moteur\</code></td><td>llama.cpp et llama-swap</td></tr>
+      <tr><td><code>modeles\</code></td><td>Les fichiers des modèles</td></tr>
+      <tr><td><code>config-llama-swap.yaml</code></td><td>Réglages des modèles (contexte, déchargement)</td></tr>
+      <tr><td><code>scripts\</code></td><td><code>demarrer.cmd</code>, <code>arreter.cmd</code>, désinstallation</td></tr>
+      <tr><td><code>LISEZ-MOI.md</code></td><td>Détail des modèles et du MCP de Claude</td></tr>
+    </table>
+  </div>
+  <div class="carte">
+    <h2>Notes</h2>
+    <p><a href="file:///D:/IA-et-outils/Notes-IA/GPU-RunPod-et-IA-locale/">D:\IA-et-outils\Notes-IA\GPU-RunPod-et-IA-locale</a> : choix du GPU loué et comparaison avec l'IA locale.</p>
+  </div>
+</section>
+
+<section id="maj">
+  <div class="note"><b>Avant de mettre OpenCode à jour (<code>/update</code>) :</b> la v2.1.2 n'est pas encore prise en charge par le patch français. En la mettant à jour, tu repasses en anglais jusqu'à ce que le patch soit adapté.</div>
+  <div class="carte">
+    <h2>Si tu mets à jour quand même</h2>
+    <ol>
+      <li>Ferme l'agent (fenêtre et terminal).</li>
+      <li>Double-clic sur <code>D:\IA LOCAL\_maintenance\OpenCode-francais\Patcher en français.cmd</code>.</li>
+      <li>S'il dit <b>« Terminé »</b> : c'est reparti en français.</li>
+      <li>S'il dit <b>« ARRÊT »</b> : rien n'est cassé, OpenCode reste en anglais. Demande à Claude d'adapter le patch à la nouvelle version.</li>
+    </ol>
+    <p>Pour revenir à l'anglais d'origine : <code>Restaurer l'original.cmd</code>, dans le même dossier.</p>
+  </div>
+</section>
+
+</main>
+<script>
+(function(){
+  var racine=document.documentElement;
+  try{var t=localStorage.getItem('plan-theme');if(t)racine.dataset.theme=t;}catch(e){}
+  document.getElementById('theme').onclick=function(){
+    var sombre=racine.dataset.theme?racine.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    racine.dataset.theme=sombre?'light':'dark';
+    try{localStorage.setItem('plan-theme',racine.dataset.theme);}catch(e){}
+  };
+  var onglets=document.querySelectorAll('nav button');
+  function ouvrir(id){
+    onglets.forEach(function(b){b.setAttribute('aria-selected',b.dataset.onglet===id);});
+    document.querySelectorAll('section').forEach(function(s){s.classList.toggle('actif',s.id===id);});
+    try{localStorage.setItem('plan-onglet',id);}catch(e){}
+  }
+  onglets.forEach(function(b){b.onclick=function(){ouvrir(b.dataset.onglet);};});
+  try{var o=localStorage.getItem('plan-onglet');if(o&&document.getElementById(o))ouvrir(o);}catch(e){}
+})();
+</script>
+</body>
+</html>

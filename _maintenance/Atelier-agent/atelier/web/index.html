@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="atelier-jeton" content="__JETON__">
+<title>Atelier de l'agent</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="bandeau-test" class="bandeau-test" hidden></div>
+<div class="fenetre active">
+  <nav class="colonne" aria-label="Sections de l'Atelier">
+    <div class="logo"><i></i><b>Atelier de l'agent</b></div>
+    <button class="nav" data-ecran="accueil"><span class="ic">⌂</span><span class="txt">Vue d'ensemble</span></button>
+    <div class="groupe">Agents</div>
+    <button class="nav" data-ecran="agents"><span class="ic">◉</span><span class="txt">Mes agents</span><span class="nb txt" id="nb-agents"></span></button>
+    <button class="nav" data-ecran="equipes"><span class="ic">⧉</span><span class="txt">Équipes</span><span class="nb txt" id="nb-equipes"></span></button>
+    <button class="nav" data-ecran="biblio"><span class="ic">▦</span><span class="txt">Bibliothèque de modèles</span><span class="nb txt" id="nb-biblio"></span></button>
+    <button class="nav" data-ecran="outils"><span class="ic">⚒</span><span class="txt">Outils de base</span></button>
+    <div class="groupe">Branchements</div>
+    <button class="nav" data-ecran="mcp"><span class="ic">⇄</span><span class="txt">MCP</span><span class="nb txt" id="nb-mcp"></span></button>
+    <button class="nav" data-ecran="modeles"><span class="ic">◆</span><span class="txt">Modèles et GPU</span></button>
+    <div class="groupe">Savoir-faire</div>
+    <button class="nav" data-ecran="commandes"><span class="ic">/</span><span class="txt">Commandes /</span><span class="nb txt" id="nb-commandes"></span></button>
+    <button class="nav" data-ecran="skills"><span class="ic">✎</span><span class="txt">Skills</span><span class="nb txt" id="nb-skills"></span></button>
+    <button class="nav" data-ecran="consignes"><span class="ic">≡</span><span class="txt">Consignes communes</span></button>
+    <div class="groupe">Sûreté</div>
+    <button class="nav" data-ecran="securite"><span class="ic">⛨</span><span class="txt">Sécurité</span></button>
+    <button class="nav" data-ecran="sauvegardes"><span class="ic">↺</span><span class="txt">Sauvegardes</span><span class="nb txt" id="nb-sauvegardes"></span></button>
+    <button class="nav" data-ecran="guide"><span class="ic">?</span><span class="txt">Guide</span></button>
+    <div class="etat-bas">
+      <span class="pastille" id="p-gpu">GPU RunPod : …</span>
+      <span class="pastille" id="p-ia">IA locale : …</span>
+      <span class="pastille" id="p-agent">Agent : …</span>
+    </div>
+  </nav>
+  <main class="principal" id="principal"></main>
+</div>
+<div class="voile" id="voile"><div class="boite" id="voile-boite"></div></div>
+<div class="toast" id="toast"></div>
+<script src="biblio.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

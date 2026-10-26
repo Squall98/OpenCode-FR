@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent local · Guide</title>
+<style>
+:root{--fond:#f5f6f9;--carte:#fff;--texte:#1c2230;--doux:#5b6476;--bord:#e1e4ea;--acc:#5b4bdb;--acc-f:#eeebff;--ok:#1d8a4b;--ok-f:#e5f5ec;--att:#b56a00;--att-f:#fff3df;--non:#c0392b;--non-f:#fdecea;--code:#eef1f6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fond:#11141a;--carte:#1a1e26;--texte:#e5e8ee;--doux:#98a1b3;--bord:#2a303c;--acc:#a59bff;--acc-f:#25223d;--ok:#5fd394;--ok-f:#15281e;--att:#ffb44d;--att-f:#2c2314;--non:#ff8a80;--non-f:#321a19;--code:#242a35}}
+:root[data-theme="dark"]{--fond:#11141a;--carte:#1a1e26;--texte:#e5e8ee;--doux:#98a1b3;--bord:#2a303c;--acc:#a59bff;--acc-f:#25223d;--ok:#5fd394;--ok-f:#15281e;--att:#ffb44d;--att-f:#2c2314;--non:#ff8a80;--non-f:#321a19;--code:#242a35}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);font:15px/1.6 system-ui,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 64px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+h1{font-size:26px;margin:0}
+.sous{color:var(--doux);margin:4px 0 20px}
+.theme{background:var(--carte);border:1px solid var(--bord);color:var(--texte);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit}
+.onglets{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--bord);margin-bottom:18px}
+.onglets button{background:none;border:0;border-bottom:3px solid transparent;color:var(--doux);padding:9px 13px;font:inherit;font-weight:600;cursor:pointer}
+.onglets button.actif{color:var(--acc);border-color:var(--acc)}
+section{display:none}section.actif{display:block}
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.carte h3{margin:0 0 8px;font-size:16px}
+.grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:14px}
+.chiffre{font-size:28px;font-weight:800;color:var(--acc)}
+.etapes{counter-reset:e;list-style:none;padding:0;margin:0}
+.etapes li{counter-increment:e;position:relative;padding:10px 0 10px 46px;border-bottom:1px solid var(--bord)}
+.etapes li:last-child{border-bottom:0}
+.etapes li::before{content:counter(e);position:absolute;left:0;top:9px;width:32px;height:32px;border-radius:50%;background:var(--acc-f);color:var(--acc);font-weight:800;display:grid;place-items:center}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bord);vertical-align:top}
+th{color:var(--doux);font-weight:600;font-size:13px}
+.tableau{overflow-x:auto}
+kbd{border:1px solid var(--bord);border-bottom-width:2px;border-radius:5px;padding:0 5px;font:12.5px Consolas,monospace}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:13px Consolas,monospace;word-break:break-word}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.ok{background:var(--ok-f);color:var(--ok)}.att{background:var(--att-f);color:var(--att)}.non{background:var(--non-f);color:var(--non)}
+.mission{background:var(--code);border-left:4px solid var(--acc);border-radius:8px;padding:10px 14px;margin:8px 0;font-style:italic}
+.note{background:var(--att-f);border:1px solid var(--bord);border-radius:10px;padding:10px 14px;margin-top:10px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <h1>Ton agent de code local</h1>
+    <p class="sous">📘 Mode d'emploi complet de l'interface (Ctrl+P, commandes /, raccourcis, Settings) : <b>Wiki OpenCode.html</b><br>OpenCode 2.0.29 + Qwen3.8-27B sur la RTX 5090 · dossier <code>D:\IA LOCAL</code> · installé le 15/10/2026</p>
+  </div>
+  <button class="theme" id="theme" type="button">🌓 Thème</button>
+</header>
+
+<nav class="onglets" role="tablist">
+  <button class="actif" data-o="demarrer">Démarrer</button>
+  <button data-o="missions">Exemples de missions</button>
+  <button data-o="aiguillage">Fiche d'aiguillage</button>
+  <button data-o="securite">Sécurité</button>
+  <button data-o="modeles">Modèles</button>
+  <button data-o="depannage">Dépannage</button>
+</nav>
+
+<section id="demarrer" class="actif">
+  <div class="grille">
+    <div class="carte"><div class="chiffre">~55 tok/s</div>vitesse du modèle agent (MTP activé)</div>
+    <div class="carte"><div class="chiffre">96 k</div>tokens de contexte (sa « mémoire de travail »)</div>
+    <div class="carte"><div class="chiffre">3 MCP</div>REA (web), Playwright, Perplexity</div>
+  </div>
+  <div class="carte">
+    <h3>Utilisation</h3>
+    <ol class="etapes">
+      <li>Double-clic sur <code>Lancer l'agent.cmd</code>. Le moteur IA locale démarre s'il le faut, puis le <b>menu de tes conversations</b> s'affiche : <kbd>Entrée</kbd> = reprendre la dernière, un <b>numéro</b> = reprendre celle-là, <kbd>N</kbd> = nouvelle, <kbd>Q</kbd> = quitter.</li>
+      <li>Écris ta mission en français. Le premier message prend ~10 s de plus (chargement du modèle).</li>
+      <li>Pas besoin de changer de profil : <code>build</code> fait tout (dev <b>et</b> reverse avec les 207 outils REA). Pour changer quand même de profil : <kbd>Shift</kbd>+<kbd>Tab</kbd> (pas Tab seul).</li>
+      <li>Quand il veut lancer une commande, il te la montre : <b>lis-la</b>, puis accepte une fois, toujours, ou refuse.</li>
+      <li><code>/exit</code> pour quitter. Le modèle libère la VRAM après 10 min d'inactivité. Pour un titre clair dans le menu : <kbd>Ctrl</kbd>+<kbd>R</kbd> dans OpenCode.</li>
+    </ol>
+  </div>
+  <div class="carte">
+    <h3>Ce qu'il y a dans le dossier</h3>
+    <div class="tableau"><table>
+      <tr><th>Dossier</th><th>À quoi il sert</th></tr>
+      <tr><td><code>projets\</code></td><td>Une mission = un dossier, avec son <code>LISEZ-MOI.md</code></td></tr>
+      <tr><td><code>outils\</code></td><td>Les outils que l'agent installe lui-même</td></tr>
+      <tr><td><code>config\opencode\</code></td><td>Ses réglages, ses consignes (<code>AGENTS.md</code>) et ses fiches (skills). Il ne peut pas les modifier.</td></tr>
+      <tr><td><code>opencode\</code>, <code>.donnees\</code></td><td>Le programme et ses données (sessions, cache, profil Chrome)</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section id="missions">
+  <div class="carte">
+    <h3>Analyser un site web</h3>
+    <p>D'abord : double-clic sur <code>Ouvrir Chrome d'analyse.cmd</code>, puis ouvre le site dans ce Chrome-là.</p>
+    <div class="mission">« Analyse le site ouvert dans le Chrome d'analyse : quels frameworks, quels appels d'API, et comment marche la page de connexion. »</div>
+    <div class="mission">« Je vais cliquer sur le bouton Ajouter au panier dans 10 secondes : observe ce qui part sur le réseau et explique-le. »</div>
+    <div class="mission">« Voici un fichier HAR dans projets\monsite\capture.har : liste les endpoints d'API. »</div>
+  </div>
+  <div class="carte">
+    <h3>Développer</h3>
+    <div class="mission">« Dans projets\scraper-prix, écris un script Python qui lit ce JSON et fait un tableau CSV, avec des tests. Lance les tests. »</div>
+    <div class="mission">« Reprends projets\monsite et écris un petit client Python pour l'API qu'on a trouvée. »</div>
+  </div>
+  <div class="carte">
+    <h3>Installer un outil</h3>
+    <div class="mission">« Installe l'outil https://github.com/… dans outils\ en suivant ta skill installer-outil. »</div>
+    <p>Il vérifie la source, te montre chaque commande et installe tout dans <code>outils\&lt;nom&gt;\</code>. Pour un dépôt inconnu ou douteux, passe plutôt par Claude.</p>
+  </div>
+  <div class="note"><b>Astuce :</b> des missions courtes et précises marchent bien mieux qu'un gros projet flou. Découpe : « analyse », puis « écris le client », puis « ajoute les tests ».</div>
+</section>
+
+<section id="aiguillage">
+  <div class="carte">
+    <h3>Tâche → outil (dans <code>AGENTS.md</code>, lu à chaque session)</h3>
+    <div class="tableau"><table>
+      <tr><th>Tu demandes…</th><th>Il utilise</th></tr>
+      <tr><td>Analyser un site</td><td>skill <code>reverse-web</code> + outils REA</td></tr>
+      <tr><td>Naviguer, cliquer, capture</td><td><code>playwright_*</code></td></tr>
+      <tr><td>Info à jour sur Internet</td><td><code>perplexity_perplexity_recherche</code></td></tr>
+      <tr><td>Écrire / lancer du code</td><td>outils fichiers + terminal</td></tr>
+      <tr><td>Installer un outil</td><td>skill <code>installer-outil</code></td></tr>
+      <tr><td>Analyser un .exe / une DLL / un APK</td><td>REA aussi, sur une <b>copie</b> du fichier dans <code>projets\</code> (Ghidra : jusqu'à 5 min)</td></tr>
+    </table></div>
+  </div>
+  <div class="carte">
+    <h3>Outils REA les plus utiles pour le web (207 disponibles)</h3>
+    <div class="tableau"><table>
+      <tr><th>Outil</th><th>Pour</th></tr>
+      <tr><td><code>list_browser_targets</code></td><td>Trouver l'onglet du site (à faire en premier)</td></tr>
+      <tr><td><code>inspect_web_page</code></td><td>Vue d'ensemble : DOM, scripts, ressources, stockage, réseau</td></tr>
+      <tr><td><code>capture_web_screenshot</code></td><td>Capture de l'écran visible</td></tr>
+      <tr><td><code>analyze_web_bundle</code></td><td>Routes, endpoints d'API, bibliothèques</td></tr>
+      <tr><td><code>observe_web_session</code></td><td>Ce qui se passe pendant que tu utilises le site</td></tr>
+      <tr><td><code>observe_web_execution</code></td><td>Quel code JS s'exécute pendant une action</td></tr>
+      <tr><td><code>inspect_web_event_listeners</code></td><td>Ce que fait un bouton</td></tr>
+      <tr><td><code>capture_browser_scenario</code></td><td>Rejouer un parcours et capturer les requêtes</td></tr>
+      <tr><td><code>inspect_web_network_capture</code></td><td>Lire un fichier HAR</td></tr>
+      <tr><td><code>discover_webmcp_tools</code></td><td>Outils WebMCP déclarés par la page</td></tr>
+      <tr><td><code>export_web_scripts</code></td><td>Exporter les scripts d'une capture</td></tr>
+      <tr><td><code>analyze_javascript_application</code></td><td>Analyser un dossier de JS téléchargé</td></tr>
+    </table></div>
+    <p class="sous">REA a 207 outils (~3,3 Mo de descriptions) : trop pour les charger d'un coup. OpenCode les passe en « Code Mode » : l'agent les appelle à la demande via <code>execute</code> → <code>tools.rea.&lt;outil&gt;</code>. Ne marchent pas sous Windows : récupération de sources (Linux), WebAssembly (WABT absent).</p>
+  </div>
+</section>
+
+<section id="securite">
+  <div class="carte">
+    <h3>Ce qui a été testé le 15/10</h3>
+    <div class="tableau"><table>
+      <tr><th>Règle</th><th>Résultat</th></tr>
+      <tr><td>Lire un fichier hors de <code>D:\IA LOCAL</code> (ex. <code>.claude.json</code>)</td><td><span class="badge ok">bloqué</span></td></tr>
+      <tr><td>Modifier ses propres réglages (<code>config\</code>)</td><td><span class="badge ok">bloqué</span></td></tr>
+      <tr><td>Commandes terminal</td><td><span class="badge att">te demande à chaque fois</span> (sauf <code>ls</code>, <code>dir</code>, <code>git status/diff/log</code>)</td></tr>
+      <tr><td><code>git push</code>, <code>docker</code>, <code>format</code></td><td><span class="badge non">toujours refusés</span></td></tr>
+      <tr><td>Voir tes skills Claude (<code>~/.claude</code>)</td><td><span class="badge ok">invisible</span> (sa « maison » est <code>.donnees\home</code>)</td></tr>
+    </table></div>
+    <div class="note">⚠️ Une commande terminal que <b>tu acceptes</b> peut, elle, toucher n'importe où sur le PC. C'est pour ça qu'il te demande : lis avant de dire oui.</div>
+  </div>
+  <div class="carte">
+    <h3>MCP volontairement non branchés</h3>
+    <p><code>discord-admin</code> et <code>perso-deploy</code> agissent en ligne. <code>cloud</code> consomme tes abonnements Codex et Gemini. <code>history</code>, <code>steam</code> et <code>discord-search</code> ne servent pas au reverse web.</p>
+  </div>
+</section>
+
+<section id="modeles">
+  <div class="carte">
+    <h3>Trois modèles au choix (<code>/models</code>)</h3>
+    <div class="tableau"><table>
+      <tr><th></th><th><code>ia-locale/agent</code> (défaut)</th><th><code>ia-locale/code</code></th><th><code>ia-locale/heretic</code></th></tr>
+      <tr><td>Modèle</td><td>Qwen3.8-27B dense, réflexion moyenne</td><td>Qwen3.6-35B-A3B (MoE)</td><td>Qwen3.8-27B Heretic (sans censure), réflexion moyenne</td></tr>
+      <tr><td>Vitesse</td><td>~55 tok/s</td><td>~150 tok/s</td><td>~35 tok/s (pas de MTP)</td></tr>
+      <tr><td>Contexte</td><td>96 k</td><td>32 k</td><td>128 k</td></tr>
+      <tr><td>Test : script Python + tests HAR</td><td>104 s · 14 tests OK · consignes suivies</td><td>55 s · 10 tests OK · LISEZ-MOI oublié, fichier renommé</td><td>Testé le 19/10 : outils OK</td></tr>
+      <tr><td>Pour</td><td>Missions en plusieurs étapes, outils REA</td><td>Petites tâches simples et rapides</td><td>Quand <code>agent</code> refuse une demande légitime</td></tr>
+    </table></div>
+    <div class="note">Avec <code>agent</code> chargé, la VRAM monte à ~22 Go sur 24 : <b>pas de Dofus en même temps</b>. Elle est libérée 10 min après la dernière requête.</div>
+  </div>
+</section>
+
+<section id="depannage">
+  <div class="carte">
+    <h3>Problèmes courants</h3>
+    <div class="tableau"><table>
+      <tr><th>Symptôme</th><th>Solution</th></tr>
+      <tr><td>« Model unavailable: ia-locale/agent »</td><td>Le fichier <code>config\opencode\opencode.json</code> est invalide : <b>pas de commentaires</b>, pas de <code>{env:…}</code> avec un chemin Windows. Voir <code>config\opencode-commente.jsonc.txt</code> pour les explications.</td></tr>
+      <tr><td>REA : « endpoint injoignable »</td><td>Le Chrome d'analyse n'est pas ouvert : lance <code>Ouvrir Chrome d'analyse.cmd</code>.</td></tr>
+      <tr><td>Très lent / la VRAM sature</td><td>Ferme les jeux, ou passe sur <code>ia-locale/code</code> avec <code>/models</code>.</td></tr>
+      <tr><td>Un process <code>opencode.exe</code> reste ouvert</td><td><code>opencode service stop</code> (n'arrive pas avec le lanceur, qui utilise <code>--standalone</code>).</td></tr>
+      <tr><td>Arrêter le moteur tout de suite</td><td><code>D:\IA-et-outils\IA-locale\scripts\arreter.cmd</code></td></tr>
+    </table></div>
+  </div>
+  <div class="carte">
+    <h3>Désinstaller</h3>
+    <p>Fermer OpenCode et supprimer <code>D:\IA LOCAL</code>. Optionnel : retirer le bloc <code>agent:</code> de <code>D:\IA-et-outils\IA-locale\config-llama-swap.yaml</code> et le modèle <code>Qwen3.8-27B-UD-Q4_K_XL.gguf</code> (17,6 Go).</p>
+  </div>
+</section>
+</main>
+<script>
+document.querySelectorAll('.onglets button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.onglets button,section').forEach(e=>e.classList.remove('actif'));
+  b.classList.add('actif');document.getElementById(b.dataset.o).classList.add('actif');
+}));
+const r=document.documentElement;
+try{const t=localStorage.getItem('theme');if(t)r.dataset.theme=t}catch(e){}
+document.getElementById('theme').addEventListener('click',()=>{
+  const sombre=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme=sombre?'light':'dark';try{localStorage.setItem('theme',r.dataset.theme)}catch(e){}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "ui.messagePart.compaction.queued": "Compactage de la session en attente",
+  "ui.message.moveToQueue": "Mettre en file d'attente",
+  "ui.message.pending": "En attente",
+  "ui.message.deletePending": "Supprimer",
+  "ui.message.modelVariant": "{{model}} ({{variant}})",
+  "ui.sessionTimeline.notice.variantSwitched": "Variante changée : {{variant}}",
+  "ui.sessionTimeline.notice.variantDefault": "Variante changée : par défaut",
+  "ui.question.custom.answerPlaceholder": "Saisissez votre propre réponse…",
+  "ui.promptInput.agentHelp": "À quoi servent les agents ?"
+}
